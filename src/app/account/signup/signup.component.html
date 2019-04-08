@@ -1,0 +1,32 @@
+
+<div class="container page page-signup">
+	<form class="auth-form" [formGroup]="form" (ngSubmit)="onSignup()">
+    <div class="row title">
+        <span class="title-lg" i18n="@@CreateNewAccount">Create New Account</span>
+      </div>
+    <div class="row error-msg">
+      <span *ngIf="errMsg==='InvalidChar'" i18n="@@InvalidCharMsg">Username cannot include special chars</span>
+      <span *ngIf="errMsg==='FieldEmpty'" i18n="@@FieldEmptyMsg">Username or Password is empty</span>
+      <span *ngIf="errMsg==='UserExist'" i18n="@@UserExistMsg">Username exists</span>
+    </div>
+
+    <div class="row">
+			<div class="label-sm" i18n="@@Username">Username</div>
+			<input formControlName="username" type="text" (focus)="onFocusUsername($event)" />
+		</div>
+
+		<!-- <div class="row">
+			<div class="label-sm">Email</div>
+			<input formControlName="email" type="text"/>
+		</div> -->
+		<div class="row">
+			<div class="label-sm" i18n="@@Password">Password</div>
+			<input formControlName="password" type="password" (focus)="onFocusPassword($event)" />
+		</div>
+
+		<div class="row btn-row">
+			<button class="btn btn-primary" type="submit" i18n="@@CreateAccount">Create Account</button>
+		</div>
+	</form>
+
+</div>

@@ -1,0 +1,20 @@
+$cellphone: "(max-width:480px)";
+$mobile: "(max-width: 767px)";
+$tablet: "(min-width: 768px) and (max-width: 1199px)";
+$desktop: "(min-width: 1200px)";
+
+
+
+.restaurant-name{
+  text-align: center;
+  padding-bottom: 15px;
+}
+
+.product-block{
+  padding:0px 3px;
+}
+
+.row{
+  margin-left:0px;
+  margin-right:0px;
+}

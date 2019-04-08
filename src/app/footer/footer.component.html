@@ -1,0 +1,67 @@
+<footer *ngIf="!bHide">
+  <div class="row bottom-nav-menus" *ngIf="!bCart && !bPay">
+    <div class="menu" (click)="toHome()">
+      <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+          <path fill="none" d="M0 0h24v24H0V0z"/>
+          <path d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+        </svg>
+      </div>
+      <div class="icon-text" i18n="@@Home">Home</div>
+    </div>
+
+    <div class="menu" (click)="toOrder()">
+      <div class="icon">
+        <img src="assets/outline-assignment-24px.svg" alt="order" />
+      </div>
+      <div class="icon-text" i18n="@@Order">Order</div>
+    </div>
+    <div class="menu" *ngIf="account && account.type !== 'super'" (click)="toCart()">
+      <div class="icon">
+        <img src="assets/outline-shopping_cart-24px.svg" alt="cart" />
+      </div>
+      <div class="icon-text" i18n="@@Cart">Cart</div>
+    </div>
+    <!-- <div class="menu" *ngIf="account && account.type === 'super'" (click)="toAdmin()">
+      <div class="icon">
+        <img src="assets/outline-settings-24px.svg" alt="admin" />
+      </div>
+      <div class="icon-text" i18n="@@Admin">Admin</div>
+    </div> -->
+    <div class="menu" (click)="toAccount()">
+      <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+            <path fill="none" d="M0 0h24v24H0V0z"/>
+            <path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+      </div>
+      <div class="icon-text" i18n="@@Account">Account</div>
+    </div>
+  </div>
+  
+  <div class="copyright">
+      <a href="#">YoCompute Inc.</a> &#169;<span id="copyright-year">{{year}}</span>
+      <!-- <a href="index-5.html">Privacy Policy</a> -->
+      <span class="created">Created by <a rel="nofollow" href="http://www.yocompute.com">yocompute.com</a></span>
+  </div>
+  
+  <div class="row cart-row" *ngIf="bCart">
+    <div class="cart-col" (click)="toCart()">
+      <span class="fa-stack fa-2x has-badge" [attr.data-count]="quantity">
+        <!-- <i class="fa fa-shopping-cart fa-3x"></i> -->
+        <img class="img-shopping-cart" src="assets/outline-shopping_cart-24px.svg" alt="cart" height="40px" width="40px" />
+      </span>
+    </div>
+    <div class="title-md amount-col">
+      ${{subtotal | number : '1.2-2'}}
+    </div>
+    <div class="title-md checkout-col" (click)="checkout()" i18n="@@Checkout">Check Out</div>
+  </div>
+
+  <div class="row checkout-row" *ngIf="bPay">
+    <div class="col-9 title-md amount-col">
+      ${{total | number : '1.2-2'}}
+    </div>
+    <div class="col-3 title-md pay-col" (click)="pay()" i18n="@@Submit">Submit</div>
+  </div>
+</footer>

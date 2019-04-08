@@ -1,0 +1,25 @@
+.place-option-list{
+  padding: 10px;
+
+  .option-item{
+    margin: 0px;
+    padding: 10px 0px;
+    height: 80px;
+    border-bottom: solid 1px #ddd;
+
+    .col-11{
+      padding-left: 10px;
+      padding-right: 5px;
+    }
+    .col-1{
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+  }
+
+  img.enter-icon{
+    width: 24px;
+    height: 24px;
+    border: none;
+  }
+}

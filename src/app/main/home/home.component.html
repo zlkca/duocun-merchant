@@ -1,0 +1,24 @@
+<div class="page">
+  <div class="location-list-block" *ngIf="showLocationList()">
+    <app-location-list [account]="account" [places]="places"
+      (placeSeleted)="onSelectPlace($event)">
+    </app-location-list>
+  </div>
+
+  <div class="map-block" *ngIf="!showLocationList()">
+    <div class="background-img" *ngIf="mapFullScreen">
+      <img src="assets/map.png" />
+    </div>
+  </div>
+
+  <div class="input-group address-search-block">
+    <app-address-input (addrChange)="onAddressChange($event)" placeholder="InputDeliveryAddress"
+      (addrClear)="onAddressClear($event)" (inputFocus)="onAddressInputFocus($event)"
+      [value]="deliveryAddress"></app-address-input>
+    <!-- <input #div type="text" id="userlocationinput" placeholder="Search by Street or Postal Code"/> -->
+    <div class="input-group-append">
+      <button type="button" class="btn btn-primary btn-current-location" (click)="useCurrentLocation()"
+        i18n="@@CurrentLocation">Current Location</button>
+    </div>
+  </div>
+</div>
