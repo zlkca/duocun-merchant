@@ -1,34 +1,43 @@
-# ehetuan
+# Duocun
 
-ehetuan is a food delivery website based on angular 5.
+Duocun is a food delivery website
 
-## Install
+# Dependencies
 
-cd to root folder.
-run `npm install`
+Nodejs 
+Mongodb
 
-## Development server
+# Install
 
-Run `ng serve -p 5004` for a dev server. 
+git clone project
 
-Navigate to `http://localhost:5004`.
+cd to project root folder /, (remove package-lock.json), then run `npm install` for server
 
-## Code scaffolding
+cd to /client folder, (remove package-lock.json), then run `npm install` for client
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Build
+## Config
+copy duocun.cfg.json file to the parent folder of root /
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+## Run
 
-## Running unit tests
+### Run Server
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+cd to project root folder /,  and run `npm run build`
 
-## Running end-to-end tests
+then `npm run start` or open Visual Studio Code and hit Debug menu.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+### Run client
+cd to /client and run `ng serve --port 5001`
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Generate language template
+cd to /client then run `ng xi18n --output-path locale` and under the locale folder you will see messages.xlf, use your merge tools merge the differences to messages-zh-Hans.xlf, and add <target> to your new items to be translate.
+
+#### Run client locale version
+run `ng serve --port 5000 --configuration=zh-Hans`
+
+#### Build production locale version
+run `ng build --prod --i18n-file src/locale/messages.zh-Hans.xlf --i18n-format xlf --i18n-locale zh-Hans`
+
+
