@@ -35,7 +35,7 @@ cd to /client and run `ng serve --port 5001`
 cd to /client then run `ng xi18n --output-path locale` and under the locale folder you will see messages.xlf, use your merge tools merge the differences to messages-zh-Hans.xlf, and add <target> to your new items to be translate.
 
 #### Run client locale version
-run `ng serve --port 5000 --configuration=zh-Hans`
+run `ng serve --port 5001 --configuration=zh-Hans`
 
 #### Build production locale version
 run `ng build --prod --i18n-file src/locale/messages.zh-Hans.xlf --i18n-format xlf --i18n-locale zh-Hans`
