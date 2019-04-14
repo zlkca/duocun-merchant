@@ -1,6 +1,6 @@
-# Duocun
+# Duocun-Merchant
 
-Duocun is a food delivery merchant website
+Duocun-Merchant is a food delivery merchant website
 
 # Dependencies
 
@@ -20,7 +20,7 @@ cd to /client and run `ng serve --port 5001`
 
 
 ### Generate language template
-cd to /client then run `ng xi18n --output-path locale` and under the locale folder you will see messages.xlf, use your merge tools merge the differences to messages-zh-Hans.xlf, and add <target> to your new items to be translate.
+cd to /, then run `ng xi18n --output-path locale` and under the locale folder you will see messages.xlf, use your merge tools merge the differences to messages-zh-Hans.xlf, and add <target> to your new items to be translate.
 
 #### Run locale version
 run `ng serve --port 5001 --configuration=zh-Hans`
