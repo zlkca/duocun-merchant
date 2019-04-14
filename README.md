@@ -1,34 +1,31 @@
-# ehetuan
+# Duocun-Merchant
 
-ehetuan is a food delivery website based on angular 5.
+Duocun-Merchant is a food delivery merchant website
 
-## Install
+# Dependencies
 
-cd to root folder.
-run `npm install`
+Nodejs 
+Mongodb
 
-## Development server
+# Install
 
-Run `ng serve -p 5004` for a dev server. 
+git clone project
 
-Navigate to `http://localhost:5004`.
+cd to project root folder /, (remove package-lock.json), then run `npm install` for server
 
-## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+# Run
 
-## Build
+cd to /client and run `ng serve --port 5001`
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
-## Running unit tests
+### Generate language template
+cd to /, then run `ng xi18n --output-path locale` and under the locale folder you will see messages.xlf, use your merge tools merge the differences to messages-zh-Hans.xlf, and add <target> to your new items to be translate.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+#### Run locale version
+run `ng serve --port 5001 --configuration=zh-Hans`
 
-## Running end-to-end tests
+#### Build production locale version
+run `ng build --i18n-file src/locale/messages.zh-Hans.xlf --i18n-format xlf --i18n-locale zh-Hans --prod --deploy-url=/partner/ --base-href=/partner/`
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
