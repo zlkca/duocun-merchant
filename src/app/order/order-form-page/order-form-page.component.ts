@@ -49,7 +49,7 @@ export class OrderFormPageComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar
   ) {
     this.form = this.fb.group({
-      notes: ['']
+      note: ['']
     });
 
     this.rx.dispatch({
@@ -140,19 +140,19 @@ export class OrderFormPageComponent implements OnInit, OnDestroy {
     const contact = this.contact;
 
     if (items && items.length > 0) {
-      const ids = items.map(x => x.restaurantId);
+      const ids = items.map(x => x.merchantId);
       const restaurantIds = ids.filter((val, i, a) => a.indexOf(val) === i);
 
       for (const id of restaurantIds) {
         orders.push({
-          restaurantId: id,
+          merchantId: id,
           items: [],
           clientId: contact.accountId,
           username: contact.username,
           created: new Date(),
           delivered: '', // this.getDateTime(v.date, v.time),
           address: this.contact.address,
-          notes: v.notes,
+          note: v.note,
           restaurant: self.restaurant,
           deliverFee: self.deliveryFee,
           deliveryDiscount: self.deliveryDiscount,
@@ -160,14 +160,14 @@ export class OrderFormPageComponent implements OnInit, OnDestroy {
           status: 'new',
           clientStatus: 'new',
           workerStatus: 'new',
-          restaurantStatus: 'new',
+          merchantStatus: 'new',
           workerId: self.malls[0].workers[0] ? self.malls[0].workers[0].id : null // fix me
         });
       }
 
       for (const item of items) {
         for (const order of orders) {
-          if (item.restaurantId === order.restaurantId) {
+          if (item.merchantId === order.merchantId) {
             order.items.push({
               name: item.productName,
               price: item.price,

@@ -1022,6 +1022,10 @@
           <context context-type="sourcefile">app/page/home/home.component.html</context>
           <context context-type="linenumber">58</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">order/summary-page/summary-page.component.html</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="e9b4e2ff31de0f80bd5239155d708135829a45bf" datatype="html">
         <source>Free delivery if order before</source>
@@ -1338,6 +1342,46 @@
         <context-group purpose="location">
           <context context-type="sourcefile">app/contact/contact-form/contact-form.component.html</context>
           <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="OrderSummary" datatype="html">
+        <source>Order Summary</source>
+        <target>订单汇总</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/summary-page/summary-page.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Note" datatype="html">
+        <source>Note</source>
+        <target>备注</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/summary-page/summary-page.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bc96aff42ce24cd4f02440fe3e0c51aa9898e5ba" datatype="html">
+        <source>LunchToday</source>
+        <target>今天午餐</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/summary-page/summary-page.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="beb3a4ba8ded6f89509e7237766f60c16038a1b2" datatype="html">
+        <source>LunchTomorrow</source>
+        <target>明天午餐</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/summary-page/summary-page.component.html</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="db3e392b3f04e3f56af40b58972d315cb981fa5e" datatype="html">
+        <source>LunchAfterTomorrow</source>
+        <target>后天午餐</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/summary-page/summary-page.component.html</context>
+          <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
     </body>

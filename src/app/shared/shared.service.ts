@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import * as moment from 'moment';
 
-declare var moment: any;
 declare var io: any;
 
 @Injectable()
@@ -48,12 +48,26 @@ export class SharedService {
     return s.split('.')[0].replace('T', ' ');
   }
 
+  getDateTime(s) {
+    return moment(s).toDate();
+  }
+
   getTotal(items) {
     let total = 0;
     items.forEach(item => {
       total += item.price * item.quantity;
     });
     return total.toFixed(2);
+  }
+
+  getTodayStart() {
+    const m = moment(); // .utcOffset(0);
+    return m.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
+  }
+
+  getNextDayStart(offset: number) {
+    const m = moment(); // .utcOffset(0);
+    return m.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(offset, 'days').toDate();
   }
 
   getToday() {

@@ -11,7 +11,6 @@ import { RestaurantGridComponent } from './restaurant-grid/restaurant-grid.compo
 import { RestaurantService } from './restaurant.service';
 // import { LocationService } from '../shared/location/location.service';
 // import { ImageUploadModule } from 'angular2-image-upload';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ImageUploaderModule } from '../image-uploader/image-uploader.module';
 import { RestaurantAboutComponent } from './restaurant-about/restaurant-about.component';
 import { RestaurantListPageComponent } from './restaurant-list-page/restaurant-list-page.component';
@@ -26,7 +25,6 @@ import { OrderService } from '../order/order.service';
 @NgModule({
     imports: [
         CommonModule,
-        NgbModule,
         SharedModule,
         FormsModule,
         ReactiveFormsModule,

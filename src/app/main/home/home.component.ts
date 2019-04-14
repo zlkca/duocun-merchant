@@ -19,6 +19,8 @@ import { ICommand } from '../../shared/command.reducers';
 import { IDeliveryTime } from '../../delivery/delivery.model';
 import { IDeliveryTimeAction } from '../../delivery/delivery-time.reducer';
 import { DeliveryTimeActions } from '../../delivery/delivery-time.actions';
+import { AccountActions } from '../../account/account.actions';
+import { Account } from '../../account/account.model';
 
 declare var google;
 
@@ -61,28 +63,38 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
-    this.accountSvc.getCurrent().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(account => {
-      self.account = account;
-      self.socketSvc.init(this.authSvc.getAccessToken());
-    });
-    this.rx.dispatch<IPageAction>({
-      type: PageActions.UPDATE_URL,
-      payload: 'home'
-    });
-    this.rx.select('cmd').pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((x: ICommand) => {
-      if (x.name === 'clear-address') {
-        this.places = [];
-      }
-    });
-    this.rx.select('location').pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((loc: ILocation) => {
-      if (loc) {
-        self.deliveryAddress = self.locationSvc.getAddrString(loc);
+
+
+    // this.accountSvc.getCurrent().pipe(
+    //   takeUntil(this.onDestroy$)
+    // ).subscribe(account => {
+    //   self.account = account;
+    //   self.socketSvc.init(this.authSvc.getAccessToken());
+    // });
+    // this.rx.dispatch<IPageAction>({
+    //   type: PageActions.UPDATE_URL,
+    //   payload: 'home'
+    // });
+
+    this.accountSvc.login('bentoboy', 'duocun').subscribe((data: any) => {
+      if (data) {
+        self.authSvc.setUserId(data.userId);
+        self.authSvc.setAccessToken(data.id);
+        self.accountSvc.getCurrentUser().subscribe((account: Account) => {
+          if (account) {
+            self.rx.dispatch({ type: AccountActions.UPDATE, payload: account }); // update header, footer icons
+            self.router.navigate(['order/summary']);
+          } else {
+            // this.errMsg = 'Wrong username or password';
+            // this.router.navigate(['account/login']);
+          }
+        },
+          (error) => {
+            // this.errMsg = error.message || 'login failed.';
+            console.error('An error occurred', error);
+          });
+      } else {
+        console.log('anonymous try to login ... ');
       }
     });
   }
@@ -90,76 +102,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.onDestroy$.next();
     this.onDestroy$.complete();
-  }
-
-  onAddressInputFocus(e?: any) {
-    const self = this;
-    this.places = [];
-    if (this.account && this.account.id) {
-      this.locationSvc.getHistoryLocations(this.account.id).then(a => {
-        self.places = a;
-      });
-    }
-  }
-
-  onSelectPlace(e) {
-    const r: ILocation = e.location;
-    this.places = [];
-    if (r) {
-      this.rx.dispatch<ILocationAction>({
-        type: LocationActions.UPDATE,
-        payload: r
-      });
-      this.deliveryAddress = e.address; // set address text to input
-      this.router.navigate(['main/filter']);
-    }
-  }
-
-  onAddressChange(e) {
-    const self = this;
-    this.places = [];
-    this.locationSvc.reqPlaces(e.input).subscribe((ps: IPlace[]) => {
-      if (ps && ps.length > 0) {
-        for (const p of ps) {
-          p.type = 'suggest';
-          self.places.push(p); // without lat lng
-        }
-      }
-    });
-  }
-
-  onAddressClear(e) {
-    this.deliveryAddress = '';
-    this.places = [];
-    this.onAddressInputFocus();
-  }
-
-  useCurrentLocation() {
-    const self = this;
-    self.places = [];
-    this.locationSvc.getCurrentLocation().then(r => {
-      self.deliveryAddress = self.locationSvc.getAddrString(r); // set address text to input
-
-      self.rx.dispatch<ILocationAction>({
-        type: LocationActions.UPDATE,
-        payload: r
-      });
-
-      this.router.navigate(['main/filter']);
-      // fix me!!!
-      // if (self.account) {
-      //   self.locationSvc.save({ userId: self.account.id, type: 'history',
-      //     placeId: r.place_id, location: r, created: new Date() }).subscribe(x => {
-      //   });
-      // }
-    },
-    err => {
-      console.log(err);
-    });
-  }
-
-  showLocationList() {
-    return this.places && this.places.length > 0;
   }
 
 }

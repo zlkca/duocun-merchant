@@ -7,13 +7,13 @@ import { Picture } from '../picture.model';
 export interface IOrder {
   clientId: number;
   username: string;
-  restaurantId: string;
+  merchantId: string;
   workerId: string;
   status: string;
   clientStatus: string;
   workerStatus: string;
-  restaurantStatus: string;
-  notes?: string;
+  merchantStatus: string;
+  note?: string;
   address: string;
   delivered?: Date;
   created?: Date;
@@ -31,13 +31,13 @@ export interface IOrder {
 export class Order implements IOrder {
   clientId: number;
   username: string;
-  restaurantId: string;
+  merchantId: string;
   workerId: string;
   status: string;
   clientStatus: string;
   workerStatus: string;
-  restaurantStatus: string;
-  notes: string;
+  merchantStatus: string;
+  note: string;
   address: string;
   delivered: Date;
   created: Date;
@@ -58,7 +58,7 @@ export class Order implements IOrder {
 export interface IOrderItem {
   price: number;
   quantity: number;
-  orderId: number;
+  orderId?: number;
   productId: number;
   created?: Date;
   modified?: Date;
