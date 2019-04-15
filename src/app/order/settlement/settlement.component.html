@@ -1,0 +1,16 @@
+
+<div class="order-list" *ngIf="list && list.length>0">
+  <div class="product-list">
+    <div class="order" *ngFor="let item of list">
+      <div class="row product-block">
+          <div class="col-6 product-col">{{item.name}}</div>
+          <div class="col-3 quantity-col">x{{item.quantity}}</div>
+          <div class="col-3 cost-col">${{item.total | number : '1.2-2'}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="row total-block">
+    <div class="col-9" i18n="@@Total">Total</div>
+    <div class="col-3">${{total | number : '1.2-2'}}</div>
+  </div>
+</div>

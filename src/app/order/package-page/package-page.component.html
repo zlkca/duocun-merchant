@@ -1,5 +1,18 @@
 <div class="page">
   <div class="title-row">
-    <span class="title-bg" i18n="@@ConfirmOrder">Confirm Order</span>
+    <span class="title-bg" i18n="@@PackOrder">Pack Order</span>
+  </div>
+  <div class="content">
+    <mat-tab-group mat-align-tabs="center">
+      <mat-tab i18n-label label="LunchToday">
+        <app-order-pack [account]="account" [dateRange]="rangeToday"></app-order-pack>
+      </mat-tab>
+      <mat-tab i18n-label label="LunchTomorrow">
+        <app-order-pack [account]="account" [dateRange]="rangeTomorrow"></app-order-pack>
+      </mat-tab>
+      <mat-tab i18n-label label="LunchAfterTomorrow">
+        <app-order-pack [account]="account" [dateRange]="rangeAfterTomorrow"></app-order-pack>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>

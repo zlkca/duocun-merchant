@@ -15,6 +15,9 @@ import { AccountService } from '../account/account.service';
 import { SummaryPageComponent } from './summary-page/summary-page.component';
 import { PackagePageComponent } from './package-page/package-page.component';
 import { OrderSummaryComponent } from './order-summary/order-summary.component';
+import { OrderPackComponent } from './order-pack/order-pack.component';
+import { SettlementPageComponent } from './settlement-page/settlement-page.component';
+import { SettlementComponent } from './settlement/settlement.component';
 
 @NgModule({
   imports: [
@@ -39,8 +42,11 @@ import { OrderSummaryComponent } from './order-summary/order-summary.component';
     OrderHistoryComponent,
     OrderFormPageComponent,
     OrderSummaryComponent,
+    OrderPackComponent,
+    SettlementComponent,
     SummaryPageComponent,
     PackagePageComponent,
+    SettlementPageComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

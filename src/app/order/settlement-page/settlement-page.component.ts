@@ -4,33 +4,33 @@ import { AccountService } from '../../account/account.service';
 import { SharedService } from '../../shared/shared.service';
 
 @Component({
-  selector: 'app-package-page',
-  templateUrl: './package-page.component.html',
-  styleUrls: ['./package-page.component.scss']
+  selector: 'app-settlement-page',
+  templateUrl: './settlement-page.component.html',
+  styleUrls: ['./settlement-page.component.scss']
 })
-export class PackagePageComponent implements OnInit {
+export class SettlementPageComponent implements OnInit {
 
   account: IAccount;
-  rangeToday;
-  rangeTomorrow;
-  rangeAfterTomorrow;
+  rangeDay;
+  rangeWeek;
+  rangeMonth;
+
   constructor(
     private accountSvc: AccountService,
     private sharedSvc: SharedService,
   ) {
+    const dayStart = this.sharedSvc.getStartOf('day').toDate();
+    const dayEnd = this.sharedSvc.getEndOf('day').toDate();
+    const weekStart = this.sharedSvc.getStartOf('week').toDate();
+    const weekEnd = this.sharedSvc.getEndOf('week').toDate();
+    const monthStart = this.sharedSvc.getStartOf('month').toDate();
+    const monthEnd = this.sharedSvc.getEndOf('month').toDate();
 
-    const todayStart = this.sharedSvc.getStartOf('day').toDate();
-    const todayEnd = this.sharedSvc.getEndOf('day').toDate();
-    const tomorrowStart = this.sharedSvc.getStartOf('day').add(1).toDate();
-    const tomorrowEnd = this.sharedSvc.getEndOf('day').add(1).toDate();
-    const afterTomorrowStart = this.sharedSvc.getStartOf('day').add(2).toDate();
-    const afterTomorrowEnd = this.sharedSvc.getEndOf('day').add(2).toDate();
-
-    this.rangeToday = { $lt: todayEnd, $gt: todayStart};
-    this.rangeTomorrow = { $lt: tomorrowEnd, $gt: tomorrowStart};
-    this.rangeAfterTomorrow = { $lt: afterTomorrowEnd, $gt: afterTomorrowStart};
-
+    this.rangeDay = { $lt: dayEnd, $gt: dayStart};
+    this.rangeWeek = { $lt: weekEnd, $gt: weekStart};
+    this.rangeMonth = { $lt: monthEnd, $gt: monthStart};
   }
+
   ngOnInit() {
     const self = this;
     this.accountSvc.getCurrent().subscribe((account: IAccount) => {

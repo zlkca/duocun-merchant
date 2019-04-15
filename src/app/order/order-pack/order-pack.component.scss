@@ -1,0 +1,27 @@
+.order{
+  border-bottom: solid 1px #eee;
+  padding: 10px;
+
+  .note-row, .order-id-row, .client-row{
+    font-size: 14px;
+    .col-2{
+      padding: 0px;
+    }
+    .col-10{
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+  }
+
+  .product-block{
+    padding-top: 10px;
+    .product-col{
+      padding-left: 0px;
+    }
+  }
+}
+
+.order-list{
+  height: 100%;
+  overflow: scroll;
+}

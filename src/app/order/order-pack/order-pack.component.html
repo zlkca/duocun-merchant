@@ -1,0 +1,27 @@
+
+<div class="order-list" *ngIf="orders && orders.length>0">
+
+    <div class="order" *ngFor="let order of orders">
+      <div class="row order-id-row">
+        <div class="col-2" i18n="@@OrderId">Order Id</div>
+        <div class="col-10">{{order.id}}</div>
+      </div>
+      <div class="row client-row">
+        <div class="col-2" i18n="@@Client">Client</div>
+        <div class="col-10">{{order.clientName}}</div>
+      </div>
+      <div class="row note-row">
+        <div class="col-2" i18n="@@Note">Note</div>
+        <div class="col-10">{{order.note}}</div>
+      </div>
+      <div class="product-block">
+          <div *ngFor="let item of order.items" class="text-sm row">
+            <div class="col-6 product-col">{{item.name}}</div>
+            <div class="col-3 quantity-col">x{{item.quantity}}</div>
+            <!-- <div class="col-3 price-col">${{item.price * item.quantity | number : '1.2-2'}}</div> -->
+          </div>
+      </div>
+
+    </div>
+  </div>
+  

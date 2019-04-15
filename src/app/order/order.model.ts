@@ -6,7 +6,7 @@ import { Picture } from '../picture.model';
 
 export interface IOrder {
   clientId: number;
-  username: string;
+  clientName: string;
   merchantId: string;
   workerId: string;
   status: string;
@@ -30,7 +30,7 @@ export interface IOrder {
 
 export class Order implements IOrder {
   clientId: number;
-  username: string;
+  clientName: string;
   merchantId: string;
   workerId: string;
   status: string;

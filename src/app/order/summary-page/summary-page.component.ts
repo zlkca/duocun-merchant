@@ -14,42 +14,29 @@ import { IAccount } from '../../account/account.model';
   styleUrls: ['./summary-page.component.scss']
 })
 export class SummaryPageComponent implements OnInit {
-
   account: IAccount;
-  restaurant: Restaurant;
-  orders: IOrder[] = [];
-  list: IOrderItem[];
-  ordersWithNote: IOrder[] = [];
   rangeToday;
   rangeTomorrow;
   rangeAfterTomorrow;
   constructor(
     private accountSvc: AccountService,
-    private orderSvc: OrderService,
     private sharedSvc: SharedService,
-    private restaurantSvc: RestaurantService,
-    private socketSvc: SocketService
   ) {
-    this.rangeToday = { $lt: this.sharedSvc.getNextDayStart(1), $gt: this.sharedSvc.getTodayStart()};
-    this.rangeTomorrow = { $lt: this.sharedSvc.getNextDayStart(2), $gt: this.sharedSvc.getNextDayStart(1)};
-    this.rangeAfterTomorrow = { $lt: this.sharedSvc.getNextDayStart(3), $gt: this.sharedSvc.getNextDayStart(2)};
+    const todayStart = this.sharedSvc.getStartOf('day').toDate();
+    const todayEnd = this.sharedSvc.getEndOf('day').toDate();
+    const tomorrowStart = this.sharedSvc.getStartOf('day').add(1).toDate();
+    const tomorrowEnd = this.sharedSvc.getEndOf('day').add(1).toDate();
+    const afterTomorrowStart = this.sharedSvc.getStartOf('day').add(2).toDate();
+    const afterTomorrowEnd = this.sharedSvc.getEndOf('day').add(2).toDate();
+
+    this.rangeToday = { $lt: todayEnd, $gt: todayStart};
+    this.rangeTomorrow = { $lt: tomorrowEnd, $gt: tomorrowStart};
+    this.rangeAfterTomorrow = { $lt: afterTomorrowEnd, $gt: afterTomorrowStart};
   }
   ngOnInit() {
     const self = this;
     this.accountSvc.getCurrent().subscribe((account: IAccount) => {
       self.account = account;
-      // if (account && account.id) {
-      //   self.restaurantSvc.find({ where: { ownerId: account.id } }).subscribe((rs: IRestaurant[]) => {
-      //     if (rs && rs.length > 0) {
-      //       self.reload(rs[0].id);
-      //     } else {
-      //       self.orders = [];
-      //     }
-      //   });
-      // } else {
-      //   // should never be here.
-      //   self.orders = [];
-      // }
     });
 
     // this.socketSvc.on('updateOrders', x => {
@@ -70,43 +57,6 @@ export class SummaryPageComponent implements OnInit {
     //     });
     //   }
     // });
-  }
-
-  reload(merchantId: string) {
-    const self = this;
-    self.orderSvc.find({ where: {
-      merchantId: merchantId,
-      // delivered: { $lt: self.sharedSvc.getNextDayStart(1), $gt: self.sharedSvc.getTodayStart()}
-      delivered: { $lt: self.sharedSvc.getNextDayStart(2), $gt: self.sharedSvc.getNextDayStart(1)}
-     } }).subscribe(orders => {
-      // orders.sort((a: Order, b: Order) => {
-      //   if (this.sharedSvc.compareDateTime(a.created, b.created)) {
-      //     return -1;
-      //   } else {
-      //     return 1;
-      //   }
-      // });
-      const list = [];
-      const ordersWithNote = [];
-      orders.map((order: IOrder) => {
-        order.items.map(item => {
-          const p = list.find(x => x.productId === item.productId);
-          if (p) {
-            p.quantity = p.quantity + item.quantity;
-          } else {
-            list.push(item);
-          }
-        });
-
-        if (order.note) {
-          ordersWithNote.push(order);
-        }
-      });
-
-      self.list = list;
-      self.ordersWithNote = ordersWithNote;
-      self.orders = orders;
-    });
   }
 
   onSelect(c) {
