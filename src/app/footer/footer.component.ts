@@ -8,7 +8,6 @@ import { takeUntil, first } from '../../../node_modules/rxjs/operators';
 import { Subject, forkJoin } from '../../../node_modules/rxjs';
 import { ICart, ICartItem } from '../cart/cart.model';
 import { IMall } from '../mall/mall.model';
-import { IAmount } from '../order/order.model';
 import { ContactService } from '../contact/contact.service';
 import { LocationService } from '../location/location.service';
 import { Contact, IContact } from '../contact/contact.model';

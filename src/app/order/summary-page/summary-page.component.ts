@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../account/account.service';
-import { OrderService } from '../../order/order.service';
 import { SharedService } from '../../shared/shared.service';
-import { Order, IOrderItem, IOrder } from '../order.model';
-import { SocketService } from '../../shared/socket.service';
-import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
-import { RestaurantService } from '../../restaurant/restaurant.service';
 import { IAccount } from '../../account/account.model';
 
 @Component({
@@ -15,23 +10,33 @@ import { IAccount } from '../../account/account.model';
 })
 export class SummaryPageComponent implements OnInit {
   account: IAccount;
-  rangeToday;
-  rangeTomorrow;
-  rangeAfterTomorrow;
+  range;
+  deliverTime;
+
   constructor(
     private accountSvc: AccountService,
     private sharedSvc: SharedService,
   ) {
-    const todayStart = this.sharedSvc.getStartOf('day').toDate();
-    const todayEnd = this.sharedSvc.getEndOf('day').toDate();
-    const tomorrowStart = this.sharedSvc.getStartOf('day').add(1).toDate();
-    const tomorrowEnd = this.sharedSvc.getEndOf('day').add(1).toDate();
-    const afterTomorrowStart = this.sharedSvc.getStartOf('day').add(2).toDate();
-    const afterTomorrowEnd = this.sharedSvc.getEndOf('day').add(2).toDate();
+    const now = this.sharedSvc.getNow();
+    const lunchEnd = this.sharedSvc.getStartOf('day').set({ hour: 13, minute: 30, second: 0, millisecond: 0 });
 
-    this.rangeToday = { $lt: todayEnd, $gt: todayStart};
-    this.rangeTomorrow = { $lt: tomorrowEnd, $gt: tomorrowStart};
-    this.rangeAfterTomorrow = { $lt: afterTomorrowEnd, $gt: afterTomorrowStart};
+    if (now.isAfter(lunchEnd)) {
+      this.deliverTime = this.sharedSvc.getStartOf('day').add(1, 'days')
+        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
+        .format('YYYY-MM-DD HH:mm:ss');
+
+      const tomorrowStart = this.sharedSvc.getStartOf('day').add(1, 'days').toDate();
+      const tomorrowEnd = this.sharedSvc.getEndOf('day').add(1, 'days').toDate();
+      this.range = { $lt: tomorrowEnd, $gt: tomorrowStart };
+    } else {
+      this.deliverTime = this.sharedSvc.getStartOf('day')
+        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
+        .format('YYYY-MM-DD HH:mm:ss');
+
+      const todayStart = this.sharedSvc.getStartOf('day').toDate();
+      const todayEnd = this.sharedSvc.getEndOf('day').toDate();
+      this.range = { $lt: todayEnd, $gt: todayStart };
+    }
   }
   ngOnInit() {
     const self = this;

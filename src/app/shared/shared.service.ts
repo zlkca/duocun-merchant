@@ -48,10 +48,6 @@ export class SharedService {
     return s.split('.')[0].replace('T', ' ');
   }
 
-  getDateTime(s) {
-    return moment(s).toDate();
-  }
-
   getTotal(items) {
     let total = 0;
     items.forEach(item => {
@@ -68,6 +64,19 @@ export class SharedService {
   getNextDayStart(offset: number) {
     const m = moment(); // .utcOffset(0);
     return m.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(offset, 'days').toDate();
+  }
+
+
+  getDateTime(s) {
+    if (s) {
+      return moment(s);
+    } else {
+      return moment();
+    }
+  }
+
+  getNow() {
+    return moment();
   }
 
   // type --- 'day', 'date', week', 'month', 'year', 12:00 am
