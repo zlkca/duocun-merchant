@@ -21,7 +21,8 @@ $item-height:40px;
 $navbar-height:60px;
 $navbar-m-height:60px;
 
-$bottom-bar-height: 60px;
+$header-height: 60px;
+$footer-height: 60px;
 
 // google map label
 .gm-style-cc{
@@ -339,13 +340,28 @@ body{
   .row{
     margin: 0px;
   }
-  
-  .title-row{
-    padding: 15px;
+
+  .header-row{
+    padding: 15px 15px 10px 15px;
     text-align: center;
     border-bottom: solid 1px #eee;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: $header-height;
+    margin: 0px;
+    background-color: white;
+    z-index: 10;
   }
-  
+
+  .content{
+    height: calc(100% - #{$header-height} - #{$footer-height});
+    overflow: scroll;
+    position: fixed;
+    top: 60px;
+    width: 100%;
+  }
+
   .option-list{
     margin-top: 46px;
     padding: 10px;
@@ -454,12 +470,6 @@ select:not([multiple]) {
    }
 
   @media #{$mobile}{
-    .page{
-      margin-top:0px;
-      // min-height:500px;
-      padding-bottom: $bottom-bar-height;
-    }
-
     .auth-form{
       width:100%;
 
@@ -475,10 +485,6 @@ select:not([multiple]) {
       padding-right:0px;
     }
 
-    .page{
-      margin-top:0px;
-      min-height:460px;
-    }
     .auth-form{
       width:100%;
     }

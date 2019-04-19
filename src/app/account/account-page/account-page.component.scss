@@ -1,0 +1,57 @@
+$blue: #4285F3;
+
+.head-block{
+  padding-bottom: 20px;
+  height: 150px;
+  background-color: $blue;
+  padding-top: 20px;
+  margin-bottom: 30px;
+  
+  .name-block{
+    height: 90px;
+    display: inline-block;
+    padding-top: 45px;
+    padding-left: 60px;
+  }
+  .portrait-block{
+    height: 90px;
+    padding-right: 60px;
+    padding-top: 30px;
+    display: inline-block;
+  }
+}
+.portrait-frame{
+  height: 64px;
+  width: 64px;
+  float: right;
+
+  img.portrait{
+    background-color: transparent;
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+}
+.form-group{
+  padding: 10px 15px;
+}
+.phone-input{
+  width: 100%;
+  height: 40px;
+  border: solid 1px #aaa;
+  font-size: 14px;
+  padding: 9px;
+}
+
+.error-msg{
+  margin-bottom: 20px;
+  padding-left: 10px;
+}
+
+.apply-block{
+  padding-top: 80px;
+  .btn-apply{
+    width: 100%;
+    margin-top: 15px;
+  }
+}

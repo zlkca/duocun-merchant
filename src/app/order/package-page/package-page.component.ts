@@ -1,24 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { IAccount } from '../../account/account.model';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { IAccount, Role } from '../../account/account.model';
 import { AccountService } from '../../account/account.service';
 import { SharedService } from '../../shared/shared.service';
+import { IRestaurant } from '../../restaurant/restaurant.model';
+import { Subject } from '../../../../node_modules/rxjs';
+import { RestaurantService } from '../../restaurant/restaurant.service';
+import { ActivatedRoute, Router } from '../../../../node_modules/@angular/router';
+import { takeUntil } from '../../../../node_modules/rxjs/operators';
 
 @Component({
   selector: 'app-package-page',
   templateUrl: './package-page.component.html',
   styleUrls: ['./package-page.component.scss']
 })
-export class PackagePageComponent implements OnInit {
+export class PackagePageComponent implements OnInit, OnDestroy {
 
   account: IAccount;
   range;
   now;
   lunchEnd;
   deliverTime;
+  onDestroy$ = new Subject();
+  restaurant: IRestaurant;
 
   constructor(
-    private accountSvc: AccountService,
+    private restaurantSvc: RestaurantService,
     private sharedSvc: SharedService,
+    private accountSvc: AccountService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     const now = this.sharedSvc.getNow();
     const lunchEnd = this.sharedSvc.getStartOf('day').set({ hour: 13, minute: 30, second: 0, millisecond: 0 });
@@ -43,8 +53,30 @@ export class PackagePageComponent implements OnInit {
   }
   ngOnInit() {
     const self = this;
-    this.accountSvc.getCurrent().subscribe((account: IAccount) => {
-      self.account = account;
+    self.route.params.pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe(params => {
+        self.accountSvc.getCurrent().pipe(
+          takeUntil(this.onDestroy$)
+        ).subscribe(account => {
+            const roles = account.roles;
+            if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+              && account.merchants && account.merchants.length > 0
+            ) {
+              const merchantId = params['id'];
+              self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
+                takeUntil(this.onDestroy$)
+              ).subscribe((rs: IRestaurant[]) => {
+                if (rs && rs.length > 0) {
+                  self.restaurant = rs[0];
+                } else {
+                  self.restaurant = null;
+                }
+              });
+            } else { // not authorized for opreration merchant
+              this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+            }
+        });
     });
 
     // this.socketSvc.on('updateOrders', x => {
@@ -65,6 +97,11 @@ export class PackagePageComponent implements OnInit {
     //     });
     //   }
     // });
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
 
   onSelect(c) {

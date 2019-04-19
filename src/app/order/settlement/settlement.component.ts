@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
 import { IAccount } from '../../account/account.model';
 import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
 import { IOrder, IOrderItem } from '../order.model';
@@ -7,21 +7,22 @@ import { SharedService } from '../../shared/shared.service';
 import { RestaurantService } from '../../restaurant/restaurant.service';
 import { ProductService } from '../../product/product.service';
 import { IProduct } from '../../product/product.model';
+import { Subject } from '../../../../node_modules/rxjs';
+import { takeUntil } from '../../../../node_modules/rxjs/operators';
 
 @Component({
   selector: 'app-settlement',
   templateUrl: './settlement.component.html',
   styleUrls: ['./settlement.component.scss']
 })
-export class SettlementComponent implements OnInit {
-
-  @Input() account: IAccount;
+export class SettlementComponent implements OnInit, OnChanges, OnDestroy {
   @Input() dateRange;
 
-  restaurant: Restaurant;
+  @Input() restaurant: Restaurant;
   list: any[] = [];
   ordersWithNote: IOrder[] = [];
   total = 0;
+  onDestroy$ = new Subject();
 
   constructor(
     private orderSvc: OrderService,
@@ -33,17 +34,9 @@ export class SettlementComponent implements OnInit {
   }
   ngOnInit() {
     const self = this;
-    const account = this.account;
-    if (account && account.id) {
-      self.restaurantSvc.find({ where: { ownerId: account.id } }).subscribe((rs: IRestaurant[]) => {
-        if (rs && rs.length > 0) {
-          self.reload(rs[0].id);
-        } else {
-          self.list = [];
-        }
-      });
+    if (this.restaurant) {
+      self.reload(this.restaurant.id);
     } else {
-      // should never be here.
       self.list = [];
     }
 
@@ -67,9 +60,23 @@ export class SettlementComponent implements OnInit {
     // });
   }
 
+  ngOnChanges(v) {
+    if (v.restaurant && v.restaurant.currentValue) {
+      const restaurant = v.restaurant.currentValue;
+      this.reload(restaurant.id);
+    }
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
+  }
+
   reload(merchantId: string) {
     const self = this;
-    self.orderSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange }}).subscribe(orders => {
+    self.orderSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange }}).pipe(
+      takeUntil(self.onDestroy$)
+    ).subscribe(orders => {
       const list = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
@@ -84,7 +91,9 @@ export class SettlementComponent implements OnInit {
 
       self.list = list;
       self.total = 0;
-      self.productSvc.find({ where: { merchantId: merchantId}}).subscribe((products: IProduct[]) => {
+      self.productSvc.find({ where: { merchantId: merchantId}}).pipe(
+        takeUntil(self.onDestroy$)
+      ).subscribe((products: IProduct[]) => {
         self.list.map( it => {
           const p = products.find(x => x.id === it.productId);
           if (p) {

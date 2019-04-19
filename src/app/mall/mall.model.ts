@@ -1,3 +1,5 @@
+import { IEntity } from '../entity.model';
+
 export interface IEntityBase {
   id?: string;
 }

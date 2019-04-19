@@ -1,6 +1,14 @@
-import { Restaurant } from '../restaurant/restaurant.model';
-import { GeoPoint } from '../location/location.model';
-import { Order } from '../order/order.model';
+import { IAddress, Address } from '../entity.model';
+
+export enum Role {
+  SUPER = 1,
+  MERCHANT_ADMIN = 2,
+  MERCHANT_STUFF = 3,
+  MANAGER = 4,
+  STUFF = 5,
+  CLIENT = 6
+}
+
 export interface IAccount {
   type: string;
   realm?: string;
@@ -11,9 +19,9 @@ export interface IAccount {
   id?: string;
   password?: string;
   accessTokens?: any[];
-  restaurants?: Restaurant[];
-  orders?: Order[];
-  address?: Address;
+  address?: IAddress;
+  roles?: number[];
+  merchants?: string[]; // merchant Ids
 }
 
 export class Account implements IAccount {
@@ -26,51 +34,11 @@ export class Account implements IAccount {
   id: string;
   password: string;
   accessTokens: any[];
-  restaurants: Restaurant[];
-  orders: Order[];
   address: Address;
+  roles?: number[];
+  merchants?: string[]; // merchant Ids
   constructor(data?: IAccount) {
     Object.assign(this, data);
   }
 }
 
-export interface IAddress {
-  formattedAddress: string;
-  unit?: number;
-  streetName: string;
-  streetNumber: string;
-  location?: GeoPoint;
-  sublocality?: string;
-  city?: string;
-  province?: string;
-  country?: string;
-  postalCode?: string;
-  created?: Date;
-  modified?: Date;
-  id?: number;
-  entityId?: number;
-  entityType?: string;
-  entity?: any;
-}
-
-export class Address implements IAddress {
-  formattedAddress: string;
-  unit: number;
-  streetName: string;
-  streetNumber: string;
-  location: GeoPoint;
-  sublocality: string;
-  city: string;
-  province: string;
-  country: string;
-  postalCode: string;
-  created: Date;
-  modified: Date;
-  id: number;
-  entityId: number;
-  entityType: string;
-  entity: any;
-  constructor(data?: IAddress) {
-    Object.assign(this, data);
-  }
-}

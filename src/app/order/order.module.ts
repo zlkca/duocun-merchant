@@ -10,7 +10,6 @@ import { OrderService } from './order.service';
 import { OrderHistoryComponent } from './order-history/order-history.component';
 import { OrderRoutingModule } from './order-routing.module';
 import { RestaurantService } from '../restaurant/restaurant.service';
-import { OrderFormPageComponent } from './order-form-page/order-form-page.component';
 import { AccountService } from '../account/account.service';
 import { SummaryPageComponent } from './summary-page/summary-page.component';
 import { PackagePageComponent } from './package-page/package-page.component';
@@ -26,7 +25,6 @@ import { SettlementComponent } from './settlement/settlement.component';
     MatExpansionModule,
     FormsModule,
     ReactiveFormsModule,
-    MatTabsModule,
     MatSnackBarModule,
     OrderRoutingModule,
     SharedModule
@@ -40,7 +38,6 @@ import { SettlementComponent } from './settlement/settlement.component';
   ],
   declarations: [
     OrderHistoryComponent,
-    OrderFormPageComponent,
     OrderSummaryComponent,
     OrderPackComponent,
     SettlementComponent,

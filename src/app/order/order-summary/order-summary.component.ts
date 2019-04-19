@@ -1,53 +1,44 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
 import { AccountService } from '../../account/account.service';
 import { OrderService } from '../../order/order.service';
 import { SharedService } from '../../shared/shared.service';
-import { Order, IOrderItem, IOrder } from '../order.model';
-import { SocketService } from '../../shared/socket.service';
-import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
-import { RestaurantService } from '../../restaurant/restaurant.service';
-import { IAccount } from '../../account/account.model';
+import { IOrderItem, IOrder } from '../order.model';
+// import { SocketService } from '../../shared/socket.service';
+import { IRestaurant } from '../../restaurant/restaurant.model';
+import { takeUntil } from '../../../../node_modules/rxjs/operators';
+import { Subject } from '../../../../node_modules/rxjs';
 
 @Component({
   selector: 'app-order-summary',
   templateUrl: './order-summary.component.html',
   styleUrls: ['./order-summary.component.scss']
 })
-export class OrderSummaryComponent implements OnInit {
-
-  @Input() account: IAccount;
+export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() restaurant: IRestaurant;
   @Input() dateRange;
 
-  restaurant: Restaurant;
   orders: IOrder[] = [];
   list: IOrderItem[];
   ordersWithNote: IOrder[] = [];
+  onDestroy$ = new Subject();
 
   constructor(
-    private accountSvc: AccountService,
     private orderSvc: OrderService,
     private sharedSvc: SharedService,
-    private restaurantSvc: RestaurantService,
   ) {
 
   }
+  ngOnDestroy() {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
+  }
   ngOnInit() {
     const self = this;
-    // this.accountSvc.getCurrent().subscribe((account: IAccount) => {
-    const account = this.account;
-      if (account && account.id) {
-        self.restaurantSvc.find({ where: { ownerId: account.id } }).subscribe((rs: IRestaurant[]) => {
-          if (rs && rs.length > 0) {
-            self.reload(rs[0].id);
-          } else {
-            self.orders = [];
-          }
-        });
-      } else {
-        // should never be here.
-        self.orders = [];
-      }
-    // });
+    if (this.restaurant) {
+      self.reload(this.restaurant.id);
+    } else {
+      self.orders = [];
+    }
 
     // this.socketSvc.on('updateOrders', x => {
     //   // self.onFilterOrders(this.selectedRange);
@@ -71,12 +62,16 @@ export class OrderSummaryComponent implements OnInit {
 
   reload(merchantId: string) {
     const self = this;
-    self.orderSvc.find({ where: {
-      merchantId: merchantId,
-      delivered: self.dateRange
-      // delivered: { $lt: self.sharedSvc.getNextDayStart(1), $gt: self.sharedSvc.getTodayStart()}
-      // delivered: { $lt: self.sharedSvc.getNextDayStart(2), $gt: self.sharedSvc.getNextDayStart(1)}
-     } }).subscribe(orders => {
+    self.orderSvc.find({
+      where: {
+        merchantId: merchantId,
+        delivered: self.dateRange
+        // delivered: { $lt: self.sharedSvc.getNextDayStart(1), $gt: self.sharedSvc.getTodayStart()}
+        // delivered: { $lt: self.sharedSvc.getNextDayStart(2), $gt: self.sharedSvc.getNextDayStart(1)}
+      }
+    }).pipe(
+      takeUntil(self.onDestroy$)
+    ).subscribe(orders => {
       // orders.sort((a: Order, b: Order) => {
       //   if (this.sharedSvc.compareDateTime(a.created, b.created)) {
       //     return -1;
@@ -105,6 +100,13 @@ export class OrderSummaryComponent implements OnInit {
       self.ordersWithNote = ordersWithNote;
       self.orders = orders;
     });
+  }
+
+  ngOnChanges(v) {
+    if (v.restaurant && v.restaurant.currentValue) {
+      const restaurant = v.restaurant.currentValue;
+      this.reload(restaurant.id);
+    }
   }
 
   onSelect(c) {

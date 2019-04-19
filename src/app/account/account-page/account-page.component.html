@@ -1,0 +1,39 @@
+<div class="page">
+  <div *ngIf="account">
+    <div class="row head-block">
+      <div class="col-8 name-block title-bg">{{account.username}}</div>
+      <div class="col-4 portrait-block">
+        <div class="portrait-frame">
+          <img class="portrait" [src]="account.imageurl"/>
+        </div>
+      </div>
+    </div>
+
+      <!-- <div class="row form-group">
+        <mat-form-field>
+          <mat-label i18n="@@Restaurant">Restaurant</mat-label>
+          <mat-select (change)="selectRestaurant($event)">
+            <mat-option *ngFor="let r of restaurants" [value]="r.id">
+              {{r.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div> -->
+
+      <form *ngIf="!bMerchant && !bApplied" class="auth-form apply-block" [formGroup]="form">    
+        <div class="row error-msg">
+          <span *ngIf="errMsg">餐馆名称不能为空</span>
+        </div>
+    
+        <div class="row">
+          <div class="label-sm" i18n="@@RestaurantName">Restaurant</div>
+          <input formControlName="name" name="name" type="text" required="" (focus)="onChangeRestaurantName($event)"/>
+        </div>
+      
+        <div class="row">
+          <div class="btn btn-primary btn-apply" i18n="@@ApplyAsMerchant" (click)="applyMerchant()">Apply as Merchant</div>
+        </div>
+        
+      </form>
+  </div>
+</div>

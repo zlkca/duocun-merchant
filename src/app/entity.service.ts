@@ -3,10 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { AuthService } from './account/auth.service';
+import { IEntity } from './entity.model';
 
-export interface IEntity {
-  id ?: string;
-}
 
 @Injectable()
 export class EntityService {

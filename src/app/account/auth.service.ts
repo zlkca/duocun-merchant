@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as Cookies from 'js-cookie';
-import { ILocation } from '../location/location.model';
 
 @Injectable()
 export class AuthService {

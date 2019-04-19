@@ -1,47 +1,36 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { IAccount } from '../../account/account.model';
-import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
+import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
+import { IRestaurant } from '../../restaurant/restaurant.model';
 import { IOrder, IOrderItem } from '../order.model';
 import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
-import { RestaurantService } from '../../restaurant/restaurant.service';
+import { Subject } from '../../../../node_modules/rxjs';
+import { takeUntil } from '../../../../node_modules/rxjs/operators';
 
 @Component({
   selector: 'app-order-pack',
   templateUrl: './order-pack.component.html',
   styleUrls: ['./order-pack.component.scss']
 })
-export class OrderPackComponent implements OnInit {
-
-
-  @Input() account: IAccount;
+export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() restaurant: IRestaurant;
   @Input() dateRange;
 
-  restaurant: Restaurant;
   orders: IOrder[] = [];
   list: IOrderItem[];
   ordersWithNote: IOrder[] = [];
+  onDestroy$ = new Subject();
 
   constructor(
     private orderSvc: OrderService,
     private sharedSvc: SharedService,
-    private restaurantSvc: RestaurantService,
   ) {
 
   }
   ngOnInit() {
     const self = this;
-    const account = this.account;
-    if (account && account.id) {
-      self.restaurantSvc.find({ where: { ownerId: account.id } }).subscribe((rs: IRestaurant[]) => {
-        if (rs && rs.length > 0) {
-          self.reload(rs[0].id);
-        } else {
-          self.orders = [];
-        }
-      });
+    if (this.restaurant) {
+      self.reload(this.restaurant.id);
     } else {
-      // should never be here.
       self.orders = [];
     }
 
@@ -67,7 +56,9 @@ export class OrderPackComponent implements OnInit {
 
   reload(merchantId: string) {
     const self = this;
-    self.orderSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange }}).subscribe(orders => {
+    self.orderSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange }}).pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe(orders => {
       self.orders = orders;
     });
   }
@@ -78,5 +69,17 @@ export class OrderPackComponent implements OnInit {
 
   toDateTimeString(s) {
     return s ? this.sharedSvc.toDateTimeString(s) : '';
+  }
+
+  ngOnChanges(v) {
+    if (v.restaurant && v.restaurant.currentValue) {
+      const restaurant = v.restaurant.currentValue;
+      this.reload(restaurant.id);
+    }
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
 }

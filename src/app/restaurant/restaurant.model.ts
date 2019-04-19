@@ -1,19 +1,18 @@
 import { Product } from '../product/product.model';
 import { Picture } from '../picture.model';
-import { Address } from '../account/account.model';
+import { Address } from '../entity.model';
 import { GeoPoint } from '../location/location.model';
 import { Order } from '../order/order.model';
 
-
 export interface IRestaurant {
-  name: string;
+  id?: string;
+  name?: string;
   description?: string;
   location?: GeoPoint;
   ownerId?: string;
   mallId?: string;
   created?: Date;
   modified?: Date;
-  id?: string;
   distance?: number;
   deliveryFee?: number;
   fullDeliveryFee?: number;

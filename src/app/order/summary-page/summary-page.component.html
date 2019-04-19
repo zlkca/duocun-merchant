@@ -1,12 +1,12 @@
 <div class="page">
-  <div class="title-row">
+  <div class="header-row">
     <span class="title-bg" i18n="@@OrderSummary">Order Summary</span>
   </div>
   <div class="content">
     <div class="deliver-time">
       <span i18n="@@DeliverTime">Deliver Time</span>: {{deliverTime}}
     </div>
-    <app-order-summary [account]="account" [dateRange]="range"></app-order-summary>
+    <app-order-summary *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="range"></app-order-summary>
     <!-- <mat-tab-group mat-align-tabs="center">
       <mat-tab i18n-label label="LunchToday">
         <app-order-summary [account]="account" [dateRange]="rangeToday"></app-order-summary>

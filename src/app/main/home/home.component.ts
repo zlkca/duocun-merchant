@@ -8,21 +8,14 @@ import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../store';
 import { PageActions } from '../../main/main.actions';
 import { SocketService } from '../../shared/socket.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../account/auth.service';
-import { IPageAction } from '../main.reducers';
-import { LocationActions } from '../../location/location.actions';
-import { ILocationAction } from '../../location/location.reducer';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { ICommand } from '../../shared/command.reducers';
 import { IDeliveryTime } from '../../delivery/delivery.model';
-import { IDeliveryTimeAction } from '../../delivery/delivery-time.reducer';
-import { DeliveryTimeActions } from '../../delivery/delivery-time.actions';
 import { AccountActions } from '../../account/account.actions';
-import { Account } from '../../account/account.model';
-
-declare var google;
+import { Account, Role } from '../../account/account.model';
 
 const APP = environment.APP;
 
@@ -42,7 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   account;
   bHideMap = false;
   bTimeOptions = false;
-  orderDeadline = {h: 9, m: 30};
+  orderDeadline = { h: 9, m: 30 };
   overdue;
   afternoon;
   deliveryTime: IDeliveryTime = { type: '', text: '' };
@@ -57,48 +50,122 @@ export class HomeComponent implements OnInit, OnDestroy {
     private authSvc: AuthService,
     private socketSvc: SocketService,
     private router: Router,
+    private route: ActivatedRoute,
     private rx: NgRedux<IAppState>,
   ) {
   }
 
   ngOnInit() {
     const self = this;
+    self.route.queryParamMap.pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe(queryParams => {
+      const code = queryParams.get('code');
 
-
-    // this.accountSvc.getCurrent().pipe(
-    //   takeUntil(this.onDestroy$)
-    // ).subscribe(account => {
-    //   self.account = account;
-    //   self.socketSvc.init(this.authSvc.getAccessToken());
-    // });
-    // this.rx.dispatch<IPageAction>({
-    //   type: PageActions.UPDATE_URL,
-    //   payload: 'home'
-    // });
-
-    this.accountSvc.login('bentoboy', 'duocun').subscribe((data: any) => {
-      if (data) {
-        self.authSvc.setUserId(data.userId);
-        self.authSvc.setAccessToken(data.id);
-        self.accountSvc.getCurrentUser().subscribe((account: Account) => {
-          if (account) {
-            self.rx.dispatch({ type: AccountActions.UPDATE, payload: account }); // update header, footer icons
-            self.router.navigate(['order/summary']);
-          } else {
-            // this.errMsg = 'Wrong username or password';
-            // this.router.navigate(['account/login']);
+      self.accountSvc.getCurrent().pipe(
+        takeUntil(this.onDestroy$)
+      ).subscribe(account => {
+        if (account) {
+          self.loginSuccessHandler(account);
+        } else { // not login
+          if (code) { // try wechat login
+            this.accountSvc.wechatLogin(code).pipe(
+              takeUntil(this.onDestroy$)
+            ).subscribe((data: any) => {
+              if (data) {
+                self.authSvc.setUserId(data.userId);
+                self.authSvc.setAccessToken(data.id);
+                self.accountSvc.getCurrentUser().pipe(
+                  takeUntil(this.onDestroy$)
+                ).subscribe((acc: Account) => {
+                  if (acc) {
+                    self.account = acc;
+                    self.loginSuccessHandler(acc);
+                    // this.snackBar.open('', '微信登录成功。', {
+                    //   duration: 1000
+                    // });
+                    // self.loading = false;
+                    // self.init(account);
+                  } else {
+                    this.router.navigate(['account/settings']);
+                    // this.snackBar.open('', '微信登录失败。', {
+                    //   duration: 1000
+                    // });
+                  }
+                });
+              } else { // failed from shared link login
+                // tslint:disable-next-line:max-line-length
+                window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0591bdd165898739&redirect_uri=https://duocun.com.cn&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
+              }
+            });
+          } else { // no code in router
+            this.router.navigate(['account/settings']);
           }
-        },
-          (error) => {
-            // this.errMsg = error.message || 'login failed.';
-            console.error('An error occurred', error);
-          });
+        }
+      }, err => {
+        console.log('login failed');
+      });
+    });
+
+    // this.accountSvc.login('bentoboy', 'duocun').subscribe((data: any) => {
+    //   if (data) {
+    //     self.authSvc.setUserId(data.userId);
+    //     self.authSvc.setAccessToken(data.id);
+    //     self.accountSvc.getCurrentUser().subscribe((account: Account) => {
+    //       if (account) {
+    //         self.rx.dispatch({ type: AccountActions.UPDATE, payload: account }); // update header, footer icons
+    //         self.router.navigate(['order/summary']);
+    //       } else {
+    //         // this.errMsg = 'Wrong username or password';
+    //         // this.router.navigate(['account/login']);
+    //       }
+    //     },
+    //       (error) => {
+    //         // this.errMsg = error.message || 'login failed.';
+    //         console.error('An error occurred', error);
+    //       });
+    //   } else {
+    //     console.log('anonymous try to login ... ');
+    //   }
+    // });
+  }
+
+  loginSuccessHandler(account: Account) {
+    this.rx.dispatch({ type: AccountActions.UPDATE, payload: account });
+
+    const roles = account.roles;
+    if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+      && account.merchants && account.merchants.length > 0
+    ) {
+      const merchantId = account.merchants[0];
+      this.router.navigate(['order/summary/' + merchantId]);
+    } else { // not authorized for opreration merchant
+      this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+    }
+  }
+
+  wechatLoginHandler(data: any) {
+    const self = this;
+    self.authSvc.setUserId(data.userId);
+    self.authSvc.setAccessToken(data.id);
+    self.accountSvc.getCurrentUser().pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe((account: Account) => {
+      if (account) {
+        self.account = account;
+
+        // this.snackBar.open('', '微信登录成功。', {
+        //   duration: 1000
+        // });
+        // self.loading = false;
+        // self.init(account);
       } else {
-        console.log('anonymous try to login ... ');
+        // this.snackBar.open('', '微信登录失败。', {
+        //   duration: 1000
+        // });
       }
     });
   }
-
   ngOnDestroy() {
     this.onDestroy$.next();
     this.onDestroy$.complete();

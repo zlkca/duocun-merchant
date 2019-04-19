@@ -14,6 +14,10 @@ import { AccountFormComponent } from './account-form/account-form.component';
 import { AccountRoutingModule } from './account-routing.module';
 import { AccountService } from './account.service';
 import { AuthService } from './auth.service';
+import { AccountPageComponent } from './account-page/account-page.component';
+import { MatSelectModule } from '@angular/material/select';
+import { RestaurantService } from '../restaurant/restaurant.service';
+import { MatSnackBarModule } from '../../../node_modules/@angular/material';
 
 @NgModule({
     imports: [
@@ -21,7 +25,9 @@ import { AuthService } from './auth.service';
         ReactiveFormsModule,
         RouterModule,
         AccountRoutingModule,
-        SharedModule
+        SharedModule,
+        MatSelectModule,
+        MatSnackBarModule
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     exports: [
@@ -32,11 +38,13 @@ import { AuthService } from './auth.service';
         ForgetPasswordComponent,
         ProfileFormComponent,
         AccountListComponent,
-        AccountFormComponent
+        AccountFormComponent,
+        AccountPageComponent
     ],
     providers: [
       AccountService,
-      AuthService
+      AuthService,
+      RestaurantService
     ]
 })
 export class AccountModule { }

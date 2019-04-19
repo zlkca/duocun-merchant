@@ -1464,6 +1464,14 @@
           <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
+     <trans-unit id="ApplyAsMerchant" datatype="html">
+        <source>Apply as Merchant</source>
+        <target>申请成为商家</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/settlement-page/settlement-page.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

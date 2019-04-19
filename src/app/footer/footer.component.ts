@@ -1,18 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgRedux } from '@angular-redux/store';
-import { Account } from '../account/account.model';
+import { Account, Role } from '../account/account.model';
 import { IAppState } from '../store';
 import { CommandActions } from '../shared/command.actions';
-import { takeUntil, first } from '../../../node_modules/rxjs/operators';
-import { Subject, forkJoin } from '../../../node_modules/rxjs';
-import { ICart, ICartItem } from '../cart/cart.model';
+import { takeUntil } from '../../../node_modules/rxjs/operators';
+import { Subject } from '../../../node_modules/rxjs';
 import { IMall } from '../mall/mall.model';
-import { ContactService } from '../contact/contact.service';
-import { LocationService } from '../location/location.service';
-import { Contact, IContact } from '../contact/contact.model';
 import { ILocation } from '../location/location.model';
-import { ContactActions } from '../contact/contact.actions';
 
 @Component({
   selector: 'app-footer',
@@ -40,9 +35,7 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private rx: NgRedux<IAppState>,
-    private contactSvc: ContactService,
-    private locationSvc: LocationService
+    private rx: NgRedux<IAppState>
   ) {
     const self = this;
     this.rx.select('account').pipe(
@@ -101,7 +94,15 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   toAccount() {
-    this.router.navigate(['account/login']);
+    const account = this.account;
+    const roles = account.roles;
+    if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+      && account.merchants && account.merchants.length > 0
+    ) {
+      this.router.navigate(['account/settings'], { queryParams: { merchant: true } });
+    } else {
+      this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+    }
   }
 
   toSettlement() {

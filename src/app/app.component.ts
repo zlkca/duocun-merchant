@@ -4,6 +4,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 // import { IAppState } from './store';
 // import { takeUntil } from '../../node_modules/rxjs/operators';
 import { Subject } from '../../node_modules/rxjs';
+import { AuthService } from './account/auth.service';
 // import { ILocation } from './location/location.model';
 // import { LocationService } from './location/location.service';
 
@@ -21,13 +22,17 @@ export class AppComponent implements OnInit, OnDestroy {
   onDestroy$ = new Subject<any>();
 
   constructor(
-    // private locationSvc: LocationService,
+    private authSvc: AuthService,
     // private rx: NgRedux<IAppState>
   ) {
     const self = this;
     window.addEventListener('orientationchange', function () {
       window.location.reload();
     }, false);
+
+    window.addEventListener('unload', (event) => {
+      self.authSvc.removeCookies();
+    });
 
     // this.rx.select<ILocation>('location').pipe(
     //   takeUntil(this.onDestroy$)

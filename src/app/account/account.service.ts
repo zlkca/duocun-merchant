@@ -35,6 +35,19 @@ export class AccountService extends EntityService {
     this.url = super.getBaseUrl() + 'Accounts';
   }
 
+  wechatLogin(authCode: string) {
+    const url = super.getBaseUrl() + 'wechatLogin?code=' + authCode;
+    return this.http.get(url);
+  }
+
+  applyMerchant(accountId: string, merchantName: string) {
+    return this.http.post(this.url + '/applyMerchant', {accountId: accountId, merchantName: merchantName});
+  }
+
+  getMerchantApplication(accountId: string) {
+    return this.http.post(this.url + '/getMerchantApplication', {accountId: accountId});
+  }
+
   signup(account: Account): Observable<any> {
     return this.http.post(this.url + '/signup', account);
   }

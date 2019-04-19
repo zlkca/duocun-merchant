@@ -14,15 +14,12 @@ import { IDelivery, IDeliveryTime } from './delivery/delivery.model';
 import { deliveryReducer } from './delivery/delivery.reducer';
 import { IContact } from './contact/contact.model';
 import { contactReducer } from './contact/contact.reducer';
-import { ICart } from './cart/cart.model';
-import { cartReducer } from './cart/cart.reducer';
 import { restaurantReducer } from './restaurant/restaurant.reducer';
 import { IRestaurant } from './restaurant/restaurant.model';
 import { Account } from './account/account.model';
 import { deliveryTimeReducer } from './delivery/delivery-time.reducer';
 
 export interface IAppState {
-    cart: ICart;
     account: Account;
     // picture: IPicture;
     location: ILocation;
@@ -36,7 +33,6 @@ export interface IAppState {
 }
 
 export const INITIAL_STATE: IAppState = {
-    cart: { items: [] },
     account: DEFAULT_ACCOUNT,
     // picture: DEFAULT_PICTURE,
     location: null,
@@ -60,7 +56,6 @@ export const INITIAL_STATE: IAppState = {
 // }
 
 export const rootReducer = combineReducers({
-    cart: cartReducer,
     account: accountReducer,
     // picture: pictureReducer,
     location: locationReducer,

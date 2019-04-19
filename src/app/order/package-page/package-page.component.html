@@ -1,12 +1,12 @@
 <div class="page">
-  <div class="title-row">
+  <div class="header-row">
     <span class="title-bg" i18n="@@PackOrder">Pack Order</span>
   </div>
   <div class="content">
       <div class="deliver-time">
         <span i18n="@@DeliverTime">Deliver Time</span>: {{deliverTime}}
       </div>
-      <app-order-pack [account]="account" [dateRange]="range"></app-order-pack>
+      <app-order-pack *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="range"></app-order-pack>
     <!-- <mat-tab-group mat-align-tabs="center">
       <mat-tab i18n-label label="LunchToday">
         <app-order-pack [account]="account" [dateRange]="rangeToday"></app-order-pack>

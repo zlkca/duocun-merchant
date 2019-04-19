@@ -1,21 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountService } from '../../account/account.service';
 import { SharedService } from '../../shared/shared.service';
 import { IAccount } from '../../account/account.model';
+import { ActivatedRoute } from '../../../../node_modules/@angular/router';
+import { takeUntil } from '../../../../node_modules/rxjs/operators';
+import { Subject } from '../../../../node_modules/rxjs';
+import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
+import { RestaurantService } from '../../restaurant/restaurant.service';
 
 @Component({
   selector: 'app-summary-page',
   templateUrl: './summary-page.component.html',
   styleUrls: ['./summary-page.component.scss']
 })
-export class SummaryPageComponent implements OnInit {
+export class SummaryPageComponent implements OnInit, OnDestroy {
   account: IAccount;
   range;
   deliverTime;
+  onDestroy$ = new Subject();
+  restaurant: IRestaurant;
 
   constructor(
-    private accountSvc: AccountService,
+    private restaurantSvc: RestaurantService,
     private sharedSvc: SharedService,
+    private route: ActivatedRoute
   ) {
     const now = this.sharedSvc.getNow();
     const lunchEnd = this.sharedSvc.getStartOf('day').set({ hour: 13, minute: 30, second: 0, millisecond: 0 });
@@ -40,9 +48,23 @@ export class SummaryPageComponent implements OnInit {
   }
   ngOnInit() {
     const self = this;
-    this.accountSvc.getCurrent().subscribe((account: IAccount) => {
-      self.account = account;
+
+    self.route.params.pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe(params => {
+      const merchantId = params['id'];
+      self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
+        takeUntil(this.onDestroy$)
+      ).subscribe((rs: IRestaurant[]) => {
+        if (rs && rs.length > 0) {
+          self.restaurant = rs[0];
+        } else {
+          self.restaurant = null;
+        }
+      });
     });
+
+
 
     // this.socketSvc.on('updateOrders', x => {
     //   // self.onFilterOrders(this.selectedRange);
@@ -62,6 +84,11 @@ export class SummaryPageComponent implements OnInit {
     //     });
     //   }
     // });
+  }
+
+  ngOnDestroy() {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
 
   onSelect(c) {

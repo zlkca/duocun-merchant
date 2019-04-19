@@ -1,17 +1,17 @@
 <div class="page">
-  <div class="title-row">
+  <div class="header-row">
     <span class="title-bg" i18n="@@OrderSettlement">Order Settlement</span>
   </div>
   <div class="content">
     <mat-tab-group mat-align-tabs="center">
       <mat-tab i18n-label label="DailySettlement">
-        <app-settlement [account]="account" [dateRange]="rangeDay"></app-settlement>
+        <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeDay"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="WeeklySettlement">
-        <app-settlement [account]="account" [dateRange]="rangeWeek"></app-settlement>
+        <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeWeek"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="MonthlySettlement">
-        <app-settlement [account]="account" [dateRange]="rangeMonth"></app-settlement>
+        <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeMonth"></app-settlement>
       </mat-tab>
     </mat-tab-group>
   </div>

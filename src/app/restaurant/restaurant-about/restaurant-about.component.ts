@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Restaurant } from '../restaurant.model';
-import { Address } from '../../account/account.model';
+import { Address } from '../../entity.model';
 
 @Component({
   selector: 'app-restaurant-about',
