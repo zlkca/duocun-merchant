@@ -57,14 +57,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
-    self.route.queryParamMap.pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(queryParams => {
+    self.route.queryParamMap.pipe(takeUntil(this.onDestroy$)).subscribe(queryParams => {
       const code = queryParams.get('code');
 
-      self.accountSvc.getCurrent().pipe(
-        takeUntil(this.onDestroy$)
-      ).subscribe(account => {
+      self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
         if (account) {
           self.loginSuccessHandler(account);
         } else { // not login
@@ -81,11 +77,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                   if (acc) {
                     self.account = acc;
                     self.loginSuccessHandler(acc);
-                    // this.snackBar.open('', '微信登录成功。', {
-                    //   duration: 1000
-                    // });
-                    // self.loading = false;
-                    // self.init(account);
                   } else {
                     this.router.navigate(['account/settings']);
                     // this.snackBar.open('', '微信登录失败。', {
@@ -137,8 +128,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
       && account.merchants && account.merchants.length > 0
     ) {
-      const merchantId = account.merchants[0];
-      this.router.navigate(['order/summary/' + merchantId]);
+      this.router.navigate(['order/summary']);
     } else { // not authorized for opreration merchant
       this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
     }

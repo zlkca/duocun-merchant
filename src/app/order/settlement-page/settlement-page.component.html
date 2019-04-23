@@ -5,6 +5,9 @@
   <div class="content">
     <mat-tab-group mat-align-tabs="center">
       <mat-tab i18n-label label="DailySettlement">
+        <div class="deliver-time">
+          <span></span>{{deliverTime | date: 'MMMd E'}}
+        </div>
         <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeDay"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="WeeklySettlement">

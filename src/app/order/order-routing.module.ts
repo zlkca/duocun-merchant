@@ -7,7 +7,7 @@ import { SettlementPageComponent } from './settlement-page/settlement-page.compo
 
 const routes: Routes = [
   { path: 'history', component: OrderHistoryComponent },
-  { path: 'summary/:id', component: SummaryPageComponent },
+  { path: 'summary', component: SummaryPageComponent },
   { path: 'package', component: PackagePageComponent },
   { path: 'settlement', component: SettlementPageComponent }
 ];

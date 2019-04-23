@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '../../../../node_modules/@angular/router
 import { IRestaurant } from '../../restaurant/restaurant.model';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
+import { isMoment } from '../../../../node_modules/moment';
 
 @Component({
   selector: 'app-settlement-page',
@@ -21,6 +22,7 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
   rangeMonth;
   onDestroy$ = new Subject();
   restaurant: IRestaurant;
+  deliverTime;
 
   constructor(
     private restaurantSvc: RestaurantService,
@@ -39,35 +41,43 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
     this.rangeDay = { $lt: dayEnd, $gt: dayStart};
     this.rangeWeek = { $lt: weekEnd, $gt: weekStart};
     this.rangeMonth = { $lt: monthEnd, $gt: monthStart};
+
+    const now = this.sharedSvc.getNow();
+    const timeEnd = this.sharedSvc.getStartOf('day').set({ hour: 19, minute: 30, second: 0, millisecond: 0 });
+
+    if (now.isAfter(dayEnd)) {
+      this.deliverTime = this.sharedSvc.getStartOf('day').add(1, 'days')
+        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
+        .format('YYYY-MM-DD HH:mm:ss');
+    } else {
+      this.deliverTime = this.sharedSvc.getStartOf('day')
+        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
+        .format('YYYY-MM-DD HH:mm:ss');
+    }
   }
 
   ngOnInit() {
     const self = this;
-
-    self.route.params.pipe(
+    self.accountSvc.getCurrent().pipe(
       takeUntil(this.onDestroy$)
-    ).subscribe(params => {
-        self.accountSvc.getCurrent().pipe(
-          takeUntil(this.onDestroy$)
-        ).subscribe(account => {
-            const roles = account.roles;
-            if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-              && account.merchants && account.merchants.length > 0
-            ) {
-              const merchantId = params['id'];
-              self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
-                takeUntil(this.onDestroy$)
-              ).subscribe((rs: IRestaurant[]) => {
-                if (rs && rs.length > 0) {
-                  self.restaurant = rs[0];
-                } else {
-                  self.restaurant = null;
-                }
-              });
-            } else { // not authorized for opreration merchant
-              this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+    ).subscribe(account => {
+        const roles = account.roles;
+        if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+          && account.merchants && account.merchants.length > 0
+        ) {
+          const merchantId = account.merchants[0];
+          self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
+            takeUntil(this.onDestroy$)
+          ).subscribe((rs: IRestaurant[]) => {
+            if (rs && rs.length > 0) {
+              self.restaurant = rs[0];
+            } else {
+              self.restaurant = null;
             }
-        });
+          });
+        } else { // not authorized for opreration merchant
+          this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+        }
     });
 
     // this.socketSvc.on('updateOrders', x => {

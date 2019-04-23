@@ -67,7 +67,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const self = this;
     this.sub = this.route.queryParams.subscribe(params => {
-      this.bMerchant = params['merchant'].toLowerCase() === 'true' ? true : false;
+      // this.bMerchant = params['merchant'].toLowerCase() === 'true' ? true : false;
 
       this.accountSvc.getCurrentUser().pipe(
         takeUntil(this.onDestroy$)

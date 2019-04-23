@@ -66,11 +66,11 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   toHome() {
-    this.rx.dispatch({
-      type: CommandActions.SEND,
-      payload: {name: 'clear-address', args: null}
-    });
-    this.router.navigate(['main/home']);
+    if (this.account) {
+      this.router.navigate(['order/summary']);
+    } else {
+      this.router.navigate(['account/login']);
+    }
   }
 
   toPack() {
@@ -78,18 +78,6 @@ export class FooterComponent implements OnInit, OnDestroy {
         this.router.navigate(['order/package']);
     } else {
       this.router.navigate(['account/login']);
-    }
-  }
-
-  toCart() {
-    if (this.account.type === 'user' || this.account.type === 'super') {
-      this.router.navigate(['cart']);
-    } else if (this.account.type === 'worker') {
-      this.router.navigate(['order/list-worker']);
-    } else if (this.account.type === 'restaurant') {
-      this.router.navigate(['order/list-restaurant']);
-    } else {
-      this.router.navigate(['cart']);
     }
   }
 
@@ -106,7 +94,11 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   toSettlement() {
-    this.router.navigate(['order/settlement']);
+    if (this.account) {
+      this.router.navigate(['order/settlement']);
+    } else {
+      this.router.navigate(['account/login']);
+    }
   }
 
   toAdmin() {

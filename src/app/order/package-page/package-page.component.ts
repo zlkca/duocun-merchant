@@ -31,9 +31,9 @@ export class PackagePageComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     const now = this.sharedSvc.getNow();
-    const lunchEnd = this.sharedSvc.getStartOf('day').set({ hour: 13, minute: 30, second: 0, millisecond: 0 });
+    const dayEnd = this.sharedSvc.getStartOf('day').set({ hour: 19, minute: 30, second: 0, millisecond: 0 });
 
-    if (now.isAfter(lunchEnd)) {
+    if (now.isAfter(dayEnd)) {
       this.deliverTime = this.sharedSvc.getStartOf('day').add(1, 'days')
         .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
         .format('YYYY-MM-DD HH:mm:ss');
@@ -53,30 +53,26 @@ export class PackagePageComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
     const self = this;
-    self.route.params.pipe(
+    self.accountSvc.getCurrent().pipe(
       takeUntil(this.onDestroy$)
-    ).subscribe(params => {
-        self.accountSvc.getCurrent().pipe(
-          takeUntil(this.onDestroy$)
-        ).subscribe(account => {
-            const roles = account.roles;
-            if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-              && account.merchants && account.merchants.length > 0
-            ) {
-              const merchantId = params['id'];
-              self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
-                takeUntil(this.onDestroy$)
-              ).subscribe((rs: IRestaurant[]) => {
-                if (rs && rs.length > 0) {
-                  self.restaurant = rs[0];
-                } else {
-                  self.restaurant = null;
-                }
-              });
-            } else { // not authorized for opreration merchant
-              this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+    ).subscribe(account => {
+        const roles = account.roles;
+        if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+          && account.merchants && account.merchants.length > 0
+        ) {
+          const merchantId = account.merchants[0];
+          self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
+            takeUntil(this.onDestroy$)
+          ).subscribe((rs: IRestaurant[]) => {
+            if (rs && rs.length > 0) {
+              self.restaurant = rs[0];
+            } else {
+              self.restaurant = null;
             }
-        });
+          });
+        } else { // not authorized for opreration merchant
+          this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+        }
     });
 
     // this.socketSvc.on('updateOrders', x => {
