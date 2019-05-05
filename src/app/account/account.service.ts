@@ -2,6 +2,7 @@ import { throwError as observableThrowError, Observable } from 'rxjs';
 import { map, catchError, mergeMap, flatMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { empty, of } from 'rxjs';
 
 
 import { environment } from '../../environments/environment';
@@ -35,10 +36,6 @@ export class AccountService extends EntityService {
     this.url = super.getBaseUrl() + 'Accounts';
   }
 
-  wechatLogin(authCode: string) {
-    const url = super.getBaseUrl() + 'wechatLogin?code=' + authCode;
-    return this.http.get(url);
-  }
 
   applyMerchant(accountId: string, merchantName: string) {
     return this.http.post(this.url + '/applyMerchant', {accountId: accountId, merchantName: merchantName});
@@ -74,20 +71,19 @@ export class AccountService extends EntityService {
   // return Account object or null
   getCurrentUser(): Observable<any> {
     const id: any = this.authSvc.getUserId();
-    const url = id ? (this.url + '/' + id) : (this.url + '/__anonymous__');
-    return this.http.get(url);
+    // const url = id ? (this.url + '/' + id) : (this.url + '/__anonymous__');
+    if (id) {
+      return this.http.get(this.url + '/' + id);
+    } else {
+      return of(null);
+    }
   }
 
   getCurrent(forceGet: boolean = false): Observable<Account> {
     const self = this;
     const state: any = this.ngRedux.getState();
-    if (!state || !state.account.id || forceGet) {
-      return this.getCurrentUser().pipe(
-        flatMap((acc: Account) => {
-          self.ngRedux.dispatch({ type: AccountActions.UPDATE, payload: acc });
-          return new Observable(observer => observer.next(acc));
-        })
-      );
+    if (!state || !state.account || !state.account.id || forceGet) {
+      return this.getCurrentUser();
     } else {
       return this.ngRedux.select<Account>('account');
     }
@@ -104,7 +100,7 @@ export class AccountService extends EntityService {
     if (filter) {
       headers = headers.append('filter', JSON.stringify(filter));
     }
-    return this.http.get(this.url, {headers: headers});
+    return this.http.get(this.url, { headers: headers });
   }
 
   // override method
@@ -120,7 +116,7 @@ export class AccountService extends EntityService {
       headers = headers.append('filter', JSON.stringify(filter));
     }
     const url = id ? (this.url + '/' + id) : (this.url + '/__anonymous__');
-    return this.http.get(url, {headers: headers});
+    return this.http.get(url, { headers: headers });
   }
 
   create(account: Account): Observable<any> {
@@ -133,6 +129,20 @@ export class AccountService extends EntityService {
 
   rmAccount(id): Observable<any> {
     return this.http.get(this.url);
+  }
+
+  // getWechatAccessToken(authCode: string) {
+  //   const url = super.getBaseUrl() + 'wechatAccessToken?code=' + authCode;
+  //   return this.http.get(url);
+  // }
+  // refreshWechatAccessToken(refreshToken: string) {
+  //   const url = super.getBaseUrl() + 'wechatRefreshAccessToken?token=' + refreshToken;
+  //   return this.http.get(url);
+  // }
+
+  wechatLogin(authCode: string) {
+    const url = super.getBaseUrl() + 'wechatLogin?code=' + authCode;
+    return this.http.get(url);
   }
 
   // getUserList(query?: string): Observable<User[]> {

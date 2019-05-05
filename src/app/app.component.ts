@@ -30,9 +30,9 @@ export class AppComponent implements OnInit, OnDestroy {
       window.location.reload();
     }, false);
 
-    // window.addEventListener('unload', (event) => {
-    //   self.authSvc.removeCookies();
-    // });
+    window.addEventListener('unload', (event) => {
+       self.authSvc.removeCookies();
+    });
 
     // this.rx.select<ILocation>('location').pipe(
     //   takeUntil(this.onDestroy$)

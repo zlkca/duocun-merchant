@@ -15,30 +15,39 @@ import { takeUntil } from '../../../../node_modules/rxjs/operators';
   templateUrl: './settlement.component.html',
   styleUrls: ['./settlement.component.scss']
 })
-export class SettlementComponent implements OnInit, OnChanges, OnDestroy {
+export class SettlementComponent implements OnInit, OnDestroy {
   @Input() dateRange;
-
   @Input() restaurant: Restaurant;
+
   list: any[] = [];
   ordersWithNote: IOrder[] = [];
   total = 0;
   onDestroy$ = new Subject();
+  products = [];
 
   constructor(
     private orderSvc: OrderService,
     private sharedSvc: SharedService,
-    private restaurantSvc: RestaurantService,
     private productSvc: ProductService
   ) {
 
   }
+
   ngOnInit() {
     const self = this;
-    if (this.restaurant) {
-      self.reload(this.restaurant.id);
-    } else {
-      self.list = [];
-    }
+    this.productSvc.find({ where: { merchantId: this.restaurant.id}}).pipe(
+      takeUntil(this.onDestroy$)
+    ).subscribe((products: IProduct[]) => {
+      self.products = products;
+
+      if (self.restaurant) {
+        self.reload(this.restaurant.id);
+      } else {
+        self.list = [];
+      }
+    });
+
+
 
     // this.socketSvc.on('updateOrders', x => {
     //   // self.onFilterOrders(this.selectedRange);
@@ -60,12 +69,12 @@ export class SettlementComponent implements OnInit, OnChanges, OnDestroy {
     // });
   }
 
-  ngOnChanges(v) {
-    if (v.restaurant && v.restaurant.currentValue) {
-      const restaurant = v.restaurant.currentValue;
-      this.reload(restaurant.id);
-    }
-  }
+  // ngOnChanges(v) {
+  //   if (v.restaurant && v.restaurant.currentValue) {
+  //     const restaurant = v.restaurant.currentValue;
+  //     // this.reload(restaurant.id);
+  //   }
+  // }
 
   ngOnDestroy() {
     this.onDestroy$.next();
@@ -77,31 +86,27 @@ export class SettlementComponent implements OnInit, OnChanges, OnDestroy {
     self.orderSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange }}).pipe(
       takeUntil(self.onDestroy$)
     ).subscribe(orders => {
-      const list = [];
+      const productList = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
-          const p = list.find(x => x.productId === item.productId);
+          const p = productList.find(x => x.productId === item.productId);
           if (p) {
             p.quantity = p.quantity + item.quantity;
           } else {
-            list.push(item);
+            productList.push(Object.assign({}, item));
           }
         });
       });
 
-      self.list = list;
+      self.list = productList;
       self.total = 0;
-      self.productSvc.find({ where: { merchantId: merchantId}}).pipe(
-        takeUntil(self.onDestroy$)
-      ).subscribe((products: IProduct[]) => {
-        self.list.map( it => {
-          const p = products.find(x => x.id === it.productId);
-          if (p) {
-            it.cost = p.cost;
-            it.total = it.cost * it.quantity;
-            self.total += it.total;
-          }
-        });
+      self.list.map( it => {
+        const p = self.products.find(x => x.id === it.productId);
+        if (p) {
+          it.cost = p.cost;
+          it.total = it.cost * it.quantity;
+          self.total += it.total;
+        }
       });
     });
   }

@@ -87,9 +87,9 @@ export class FooterComponent implements OnInit, OnDestroy {
     if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
       && account.merchants && account.merchants.length > 0
     ) {
-      this.router.navigate(['account/settings'], { queryParams: { merchant: true } });
+      this.router.navigate(['account/setting'], { queryParams: { merchant: true } });
     } else {
-      this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+      this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
     }
   }
 

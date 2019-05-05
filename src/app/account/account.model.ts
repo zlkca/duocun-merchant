@@ -10,14 +10,18 @@ export enum Role {
 }
 
 export interface IAccount {
-  type: string;
+  type: string; // wechat, google, fb
   realm?: string;
   username?: string;
-  email: string;
+  email?: string;
   emailVerified?: boolean;
   phone?: string;
   id?: string;
   password?: string;
+  sex?: string;
+  openid?: string; // wechat openid
+  imageurl?: string;
+  unionid?: string; // wechat unionid
   accessTokens?: any[];
   address?: IAddress;
   roles?: number[];
@@ -26,15 +30,19 @@ export interface IAccount {
 
 export class Account implements IAccount {
   type: string;
-  realm: string;
+  realm: string; // wechat, google, fb
   username: string;
-  email: string;
-  emailVerified: boolean;
+  email?: string;
+  emailVerified?: boolean;
   phone?: string;
   id: string;
   password: string;
-  accessTokens: any[];
-  address: Address;
+  sex?: string;
+  openid?: string; // wechat openid
+  imageurl?: string;
+  unionid?: string; // wechat unionid
+  accessTokens?: any[];
+  address?: Address;
   roles?: number[];
   merchants?: string[]; // merchant Ids
   constructor(data?: IAccount) {

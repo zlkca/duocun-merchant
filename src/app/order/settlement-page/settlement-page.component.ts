@@ -76,7 +76,7 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
             }
           });
         } else { // not authorized for opreration merchant
-          this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+          this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
         }
     });
 
@@ -110,4 +110,5 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
   toDateTimeString(s) {
     return s ? this.sharedSvc.toDateTimeString(s) : '';
   }
+
 }

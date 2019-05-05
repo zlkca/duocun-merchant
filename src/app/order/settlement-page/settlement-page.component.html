@@ -3,18 +3,18 @@
     <span class="title-bg" i18n="@@OrderSettlement">Order Settlement</span>
   </div>
   <div class="content">
-    <mat-tab-group mat-align-tabs="center">
+    <mat-tab-group mat-align-tabs="center" *ngIf="restaurant">
       <mat-tab i18n-label label="DailySettlement">
         <div class="deliver-time">
           <span></span>{{deliverTime | date: 'MMMd E'}}
         </div>
-        <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeDay"></app-settlement>
+        <app-settlement [restaurant]="restaurant" [dateRange]="rangeDay"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="WeeklySettlement">
-        <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeWeek"></app-settlement>
+        <app-settlement [restaurant]="restaurant" [dateRange]="rangeWeek"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="MonthlySettlement">
-        <app-settlement *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="rangeMonth"></app-settlement>
+        <app-settlement [restaurant]="restaurant" [dateRange]="rangeMonth"></app-settlement>
       </mat-tab>
     </mat-tab-group>
   </div>

@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     self.account = acc;
                     self.loginSuccessHandler(acc);
                   } else {
-                    this.router.navigate(['account/settings']);
+                    this.router.navigate(['account/setting']);
                     // this.snackBar.open('', '微信登录失败。', {
                     //   duration: 1000
                     // });
@@ -90,7 +90,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               }
             });
           } else { // no code in router
-            this.router.navigate(['account/settings']);
+            this.router.navigate(['account/setting']);
           }
         }
       }, err => {
@@ -130,7 +130,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     ) {
       this.router.navigate(['order/summary']);
     } else { // not authorized for opreration merchant
-      this.router.navigate(['account/settings'], { queryParams: { merchant: false } });
+      this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
     }
   }
 
