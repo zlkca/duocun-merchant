@@ -1,0 +1,29 @@
+<div class="payment-table-container mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef i18n="@@Date">Date</th>
+      <td mat-cell *matCellDef="let row"> {{row.date | date: 'MMMd E'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="receivable">
+      <th mat-header-cell *matHeaderCellDef i18n="Receivables"> Receivables </th>
+      <td mat-cell *matCellDef="let row"> {{row.receivable | number : '1.2-2'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="paid">
+      <th mat-header-cell *matHeaderCellDef i18n="@@Paid"> Paid </th>
+      <td mat-cell *matCellDef="let row"> {{row.paid | number : '1.2-2'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="balance">
+      <th mat-header-cell *matHeaderCellDef i18n="@@Balance"> Balance </th>
+      <td mat-cell *matCellDef="let row" [style.color]="row.balance"> {{row.balance | number : '1.2-2'}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[8]"></mat-paginator>
+</div>

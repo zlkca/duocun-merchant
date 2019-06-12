@@ -1472,6 +1472,102 @@
           <context context-type="linenumber">13</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="3317b8688eb2cfabc4021cd7b2926b32f3864ad2" datatype="html">
+        <source>Choose a date</source>
+        <target>请选择日期</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/settlement-page/settlement-page.component.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="From" datatype="html">
+        <source>From</source>
+        <target>从</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-pack/order-pack.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="To" datatype="html">
+        <source>To</source>
+        <target>到</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-pack/order-pack.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Received" datatype="html">
+        <source>Received</source>
+        <target>已收款</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-form.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Merchant" datatype="html">
+        <source>Merchant</source>
+        <target>商户</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-form.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Balance" datatype="html">
+        <source>Balance</source>
+        <target>余额</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-form.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Paid" datatype="html">
+        <source>Paid</source>
+        <target>已付款</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-pack/order-pack.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="32d9985966a52b1627abca8cd8557d81e2e9cf7a" datatype="html">
+        <source>Receivable</source>
+        <target>应收款</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-pack/order-pack.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Receivables" datatype="html">
+        <source>Receivables</source>
+        <target>应收款</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-pack/order-pack.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="ViewDetail" datatype="html">
+        <source>View Detail</source>
+        <target>查看详情</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/account/account-page.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="Date" datatype="html">
+        <source>Date</source>
+        <target>日期</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/account/account-page.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="50c1396611035c4dc5d058c50e8f472193e4081d" datatype="html">
+        <source>Receivables</source>
+        <target>应收</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">app/order/order-pack/order-pack.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

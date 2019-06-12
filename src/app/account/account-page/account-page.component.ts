@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountService } from '../account.service';
 import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../store';
-import { IAccount } from '../account.model';
+import { IAccount, Role } from '../account.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { IContact, Contact } from '../../contact/contact.model';
@@ -17,6 +17,9 @@ import { RestaurantService } from '../../restaurant/restaurant.service';
 import { IRestaurant } from '../../restaurant/restaurant.model';
 import { MatSnackBar } from '../../../../node_modules/@angular/material';
 import { FormBuilder, Validators } from '../../../../node_modules/@angular/forms';
+import { PaymentService } from '../../payment/payment.service';
+import { IPaymentData, IPayment, IMerchantPaymentData } from '../../payment/payment.model';
+import { TransactionService } from '../../transaction/transaction.service';
 
 @Component({
   selector: 'app-account-page',
@@ -24,7 +27,7 @@ import { FormBuilder, Validators } from '../../../../node_modules/@angular/forms
   styleUrls: ['./account-page.component.scss']
 })
 export class AccountPageComponent implements OnInit, OnDestroy {
-  account: Account;
+  account: IAccount;
   phone;
   address;
   onDestroy$ = new Subject<any>();
@@ -36,6 +39,10 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   bMerchant = false;
   bApplied = false;
   merchantId: string;
+  balance = 0;
+
+  receivables = [];
+  payments;
 
   get name() { return this.form.get('name'); }
 
@@ -44,7 +51,10 @@ export class AccountPageComponent implements OnInit, OnDestroy {
     private rx: NgRedux<IAppState>,
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private router: Router,
     private restaurantSvc: RestaurantService,
+    private paymentSvc: PaymentService,
+    private transactionSvc: TransactionService,
     private snackBar: MatSnackBar
   ) {
     const self = this;
@@ -67,12 +77,16 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const self = this;
     this.sub = this.route.queryParams.subscribe(params => {
-      // this.bMerchant = params['merchant'].toLowerCase() === 'true' ? true : false;
-
-      this.accountSvc.getCurrentUser().pipe(
-        takeUntil(this.onDestroy$)
-      ).subscribe((account: Account) => {
+      this.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
         self.account = account;
+        const roles = account.roles;
+        if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+          && account.merchants && account.merchants.length > 0
+        ) {
+          self.bMerchant = true;
+          self.reload(account.merchants[0]);
+        }
+
         self.accountSvc.getMerchantApplication(account.id).pipe(
           takeUntil(this.onDestroy$)
         ).subscribe(x => {
@@ -105,4 +119,64 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   onChangeRestaurantName(e) {
     this.errMsg = '';
   }
+
+  // reload(merchantId: string) {
+  //   this.transactionSvc.find({where: {type: 'debit', toId: merchantId}}).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
+  //     this.paymentSvc.find({ where: { merchantId: merchantId } }).pipe(takeUntil(this.onDestroy$)).subscribe(ps => {
+  //       const payments: IPaymentData[] = [];
+  //       let balance = 0;
+  //       ps.map(p => {
+  //         if (p.type === 'credit') {
+  //           balance += p.amount;
+  //           payments.push({ date: p.delivered, receivable: p.amount, paid: 0, balance: balance, type: 'credit' });
+  //         } else {
+  //           balance -= p.amount;
+  //           payments.push({ date: p.delivered, receivable: 0, paid: p.amount, balance: balance, type: 'debit' });
+  //         }
+  //       });
+  //       this.balance = balance;
+  //     });
+  //   });
+  // }
+
+
+
+  reload(merchantId: string) {
+    this.paymentSvc.find({ type: 'credit', merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe(receivables => {
+      this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
+        const payments: IMerchantPaymentData[] = [];
+
+        receivables.map(p => {
+          payments.push({
+            date: p.delivered, receivable: p.amount, paid: 0, balance: 0, type: 'credit',
+            merchantId: p.merchantId, merchantName: p.merchantName, driverName: p.driverName
+          });
+        });
+
+        ts.map(t => {
+          payments.push({
+            date: t.created, receivable: 0, paid: t.amount, balance: 0, type: 'debit',
+            merchantId: t.toId, merchantName: t.toName, driverName: t.fromName
+          });
+        });
+
+        let balance = 0;
+        payments.map(p => {
+          if (p.type === 'credit') {
+            balance += p.receivable;
+          } else {
+            balance -= p.paid;
+          }
+          p.balance = balance;
+        });
+
+        this.balance = balance;
+      });
+    });
+  }
+
+  toPaymentPage() {
+    this.router.navigate(['payment/main']);
+  }
+
 }

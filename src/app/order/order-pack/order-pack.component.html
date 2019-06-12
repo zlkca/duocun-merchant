@@ -3,7 +3,7 @@
   <div class="order" *ngFor="let order of orders">
     <div class="row order-id-row">
       <div class="col-2" i18n="@@OrderId">Order Id</div>
-      <div class="col-10">{{order.id}}</div>
+      <div class="col-10">{{order.code? order.code : 'N/A'}}</div>
     </div>
     <div class="row client-row">
       <div class="col-2" i18n="@@Client">Client</div>

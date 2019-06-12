@@ -5,6 +5,7 @@ import { Restaurant } from '../restaurant/restaurant.model';
 
 export interface IOrder {
   id?: string;
+  code?: string;
   clientId?: string;
   clientName?: string;
   merchantId?: string;

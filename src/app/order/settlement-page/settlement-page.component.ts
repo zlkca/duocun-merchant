@@ -7,7 +7,6 @@ import { ActivatedRoute, Router } from '../../../../node_modules/@angular/router
 import { IRestaurant } from '../../restaurant/restaurant.model';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
-import { isMoment } from '../../../../node_modules/moment';
 
 @Component({
   selector: 'app-settlement-page',
@@ -31,29 +30,7 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    const dayStart = this.sharedSvc.getStartOf('day').toDate();
-    const dayEnd = this.sharedSvc.getEndOf('day').toDate();
-    const weekStart = this.sharedSvc.getStartOf('week').toDate();
-    const weekEnd = this.sharedSvc.getEndOf('week').toDate();
-    const monthStart = this.sharedSvc.getStartOf('month').toDate();
-    const monthEnd = this.sharedSvc.getEndOf('month').toDate();
 
-    this.rangeDay = { $lt: dayEnd, $gt: dayStart};
-    this.rangeWeek = { $lt: weekEnd, $gt: weekStart};
-    this.rangeMonth = { $lt: monthEnd, $gt: monthStart};
-
-    const now = this.sharedSvc.getNow();
-    const timeEnd = this.sharedSvc.getStartOf('day').set({ hour: 19, minute: 30, second: 0, millisecond: 0 });
-
-    if (now.isAfter(dayEnd)) {
-      this.deliverTime = this.sharedSvc.getStartOf('day').add(1, 'days')
-        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-        .format('YYYY-MM-DD HH:mm:ss');
-    } else {
-      this.deliverTime = this.sharedSvc.getStartOf('day')
-        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-        .format('YYYY-MM-DD HH:mm:ss');
-    }
   }
 
   ngOnInit() {

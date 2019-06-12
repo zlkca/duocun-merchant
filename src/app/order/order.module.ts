@@ -4,6 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDatepickerModule } from '../../../node_modules/@angular/material/datepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
+// import { MatNativeDateModule } from '../../../node_modules/@angular/material/core';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 import { SharedModule } from '../shared/shared.module';
 import { OrderService } from './order.service';
@@ -17,15 +22,20 @@ import { OrderSummaryComponent } from './order-summary/order-summary.component';
 import { OrderPackComponent } from './order-pack/order-pack.component';
 import { SettlementPageComponent } from './settlement-page/settlement-page.component';
 import { SettlementComponent } from './settlement/settlement.component';
+import { ReceivableComponent } from './receivable/receivable.component';
+import { AssignmentService } from '../assignment/assignment.service';
 
 @NgModule({
   imports: [
     CommonModule,
     MatTabsModule,
     MatExpansionModule,
+    MatDatepickerModule,
+    MatSnackBarModule,
+    MatMomentDateModule,
+    MatSlideToggleModule,
     FormsModule,
     ReactiveFormsModule,
-    MatSnackBarModule,
     OrderRoutingModule,
     SharedModule
   ],
@@ -34,7 +44,8 @@ import { SettlementComponent } from './settlement/settlement.component';
   providers: [
     OrderService,
     RestaurantService,
-    AccountService
+    AccountService,
+    AssignmentService
   ],
   declarations: [
     OrderHistoryComponent,
@@ -43,7 +54,8 @@ import { SettlementComponent } from './settlement/settlement.component';
     SettlementComponent,
     SummaryPageComponent,
     PackagePageComponent,
-    SettlementPageComponent
+    SettlementPageComponent,
+    ReceivableComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
