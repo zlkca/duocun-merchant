@@ -120,27 +120,6 @@ export class AccountPageComponent implements OnInit, OnDestroy {
     this.errMsg = '';
   }
 
-  // reload(merchantId: string) {
-  //   this.transactionSvc.find({where: {type: 'debit', toId: merchantId}}).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
-  //     this.paymentSvc.find({ where: { merchantId: merchantId } }).pipe(takeUntil(this.onDestroy$)).subscribe(ps => {
-  //       const payments: IPaymentData[] = [];
-  //       let balance = 0;
-  //       ps.map(p => {
-  //         if (p.type === 'credit') {
-  //           balance += p.amount;
-  //           payments.push({ date: p.delivered, receivable: p.amount, paid: 0, balance: balance, type: 'credit' });
-  //         } else {
-  //           balance -= p.amount;
-  //           payments.push({ date: p.delivered, receivable: 0, paid: p.amount, balance: balance, type: 'debit' });
-  //         }
-  //       });
-  //       this.balance = balance;
-  //     });
-  //   });
-  // }
-
-
-
   reload(merchantId: string) {
     this.paymentSvc.find({ type: 'credit', merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe(receivables => {
       this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
@@ -148,14 +127,14 @@ export class AccountPageComponent implements OnInit, OnDestroy {
 
         receivables.map(p => {
           payments.push({
-            date: p.delivered, receivable: p.amount, paid: 0, balance: 0, type: 'credit',
+            date: p.delivered, received: p.amount, paid: 0, balance: 0, type: 'credit',
             merchantId: p.merchantId, merchantName: p.merchantName, driverName: p.driverName
           });
         });
 
         ts.map(t => {
           payments.push({
-            date: t.created, receivable: 0, paid: t.amount, balance: 0, type: 'debit',
+            date: t.created, received: 0, paid: t.amount, balance: 0, type: 'debit',
             merchantId: t.toId, merchantName: t.toName, driverName: t.fromName
           });
         });
@@ -163,7 +142,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
         let balance = 0;
         payments.map(p => {
           if (p.type === 'credit') {
-            balance += p.receivable;
+            balance += p.received;
           } else {
             balance -= p.paid;
           }
@@ -176,7 +155,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   }
 
   toPaymentPage() {
-    this.router.navigate(['payment/main']);
+    this.router.navigate(['account/balance']);
   }
 
 }

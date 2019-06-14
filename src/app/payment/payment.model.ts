@@ -79,7 +79,7 @@ export interface IPaymentData {
 
 export interface IMerchantPaymentData {
   date: string;
-  receivable: number;
+  received: number;
   paid: number;
   balance: number;
   type: string; // credit, debit

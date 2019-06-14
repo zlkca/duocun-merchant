@@ -19,7 +19,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { RestaurantService } from '../restaurant/restaurant.service';
 import { MatSnackBarModule } from '../../../node_modules/@angular/material';
 import { TransactionService } from '../transaction/transaction.service';
-
+import { BalancePageComponent } from './balance-page/balance-page.component';
+import { MatTableModule } from '@angular/material/table';
+// import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule} from '@angular/material/sort';
+import { OrderService } from '../order/order.service';
 @NgModule({
     imports: [
         CommonModule,
@@ -28,7 +32,10 @@ import { TransactionService } from '../transaction/transaction.service';
         AccountRoutingModule,
         SharedModule,
         MatSelectModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatTableModule,
+        // MatPaginatorModule,
+        MatSortModule,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     exports: [
@@ -40,13 +47,15 @@ import { TransactionService } from '../transaction/transaction.service';
         ProfileFormComponent,
         AccountListComponent,
         AccountFormComponent,
-        AccountPageComponent
+        AccountPageComponent,
+        BalancePageComponent
     ],
     providers: [
       AccountService,
       AuthService,
       RestaurantService,
-      TransactionService
+      TransactionService,
+      OrderService
     ]
 })
 export class AccountModule { }

@@ -6,18 +6,18 @@
       <td mat-cell *matCellDef="let row"> {{row.date | date: 'MMMd E'}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="receivable">
-      <th mat-header-cell *matHeaderCellDef i18n="Receivables"> Receivables </th>
-      <td mat-cell *matCellDef="let row"> {{row.receivable | number : '1.2-2'}} </td>
-    </ng-container>
-
     <ng-container matColumnDef="paid">
-      <th mat-header-cell *matHeaderCellDef i18n="@@Paid"> Paid </th>
+      <th mat-header-cell *matHeaderCellDef i18n="@@ReceivableIncrease"> Receivable Increase </th>
       <td mat-cell *matCellDef="let row"> {{row.paid | number : '1.2-2'}} </td>
     </ng-container>
 
+    <ng-container matColumnDef="received">
+      <th mat-header-cell *matHeaderCellDef i18n="@@ReceivableDecrease"> Receivable Decrease </th>
+      <td mat-cell *matCellDef="let row"> {{row.received | number : '1.2-2'}} </td>
+    </ng-container>
+
     <ng-container matColumnDef="balance">
-      <th mat-header-cell *matHeaderCellDef i18n="@@Balance"> Balance </th>
+      <th mat-header-cell *matHeaderCellDef i18n="@@Receivables"> Receivables </th>
       <td mat-cell *matCellDef="let row" [style.color]="row.balance"> {{row.balance | number : '1.2-2'}} </td>
     </ng-container>
 
