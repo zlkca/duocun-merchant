@@ -1,10 +1,8 @@
-import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
-import { IAccount } from '../../account/account.model';
-import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
-import { IOrder, IOrderItem } from '../order.model';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Restaurant } from '../../restaurant/restaurant.model';
+import { IOrder } from '../order.model';
 import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
-import { RestaurantService } from '../../restaurant/restaurant.service';
 import { ProductService } from '../../product/product.service';
 import { IProduct } from '../../product/product.model';
 import { Subject } from '../../../../node_modules/rxjs';
@@ -13,8 +11,6 @@ import { FormBuilder } from '../../../../node_modules/@angular/forms';
 import { MatDatepickerInputEvent, MatSnackBar } from '../../../../node_modules/@angular/material';
 import * as moment from 'moment';
 import { AccountService } from '../../account/account.service';
-import { IPayment } from '../../payment/payment.model';
-import { PaymentService } from '../../payment/payment.service';
 
 @Component({
   selector: 'app-settlement',
@@ -42,7 +38,6 @@ export class SettlementComponent implements OnInit, OnDestroy {
     private sharedSvc: SharedService,
     private productSvc: ProductService,
     private accountSvc: AccountService,
-    private paymentSvc: PaymentService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar
   ) {
