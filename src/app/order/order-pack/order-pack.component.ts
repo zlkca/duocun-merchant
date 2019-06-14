@@ -5,8 +5,6 @@ import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
-import { AssignmentService } from '../../assignment/assignment.service';
-import { IAssignment } from '../../assignment/assignment.model';
 
 @Component({
   selector: 'app-order-pack',
@@ -24,11 +22,11 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private orderSvc: OrderService,
-    private sharedSvc: SharedService,
-    private assignmentSvc: AssignmentService
+    private sharedSvc: SharedService
   ) {
 
   }
+
   ngOnInit() {
     const self = this;
     if (this.restaurant) {
@@ -59,19 +57,9 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchantId: string) {
     const self = this;
-    self.orderSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange } }).pipe(
+    self.orderSvc.find({ merchantId: merchantId, delivered: self.dateRange }).pipe(
       takeUntil(this.onDestroy$)
     ).subscribe((orders: IOrder[]) => {
-      self.assignmentSvc.find({ where: { merchantId: merchantId, delivered: self.dateRange } }).pipe(
-        takeUntil(this.onDestroy$)
-      ).subscribe(ass => {
-        orders.map(order => {
-          const assignment: IAssignment = ass.find(y => y.orderId === order.id);
-          if (assignment) {
-            order.code = assignment.code;
-          }
-        });
-      });
       self.orders = orders;
     });
   }

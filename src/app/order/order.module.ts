@@ -23,7 +23,6 @@ import { OrderPackComponent } from './order-pack/order-pack.component';
 import { SettlementPageComponent } from './settlement-page/settlement-page.component';
 import { SettlementComponent } from './settlement/settlement.component';
 import { ReceivableComponent } from './receivable/receivable.component';
-import { AssignmentService } from '../assignment/assignment.service';
 
 @NgModule({
   imports: [
@@ -44,8 +43,7 @@ import { AssignmentService } from '../assignment/assignment.service';
   providers: [
     OrderService,
     RestaurantService,
-    AccountService,
-    AssignmentService
+    AccountService
   ],
   declarations: [
     OrderHistoryComponent,
