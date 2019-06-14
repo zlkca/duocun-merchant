@@ -3,23 +3,18 @@ import { AccountService } from '../account.service';
 import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../store';
 import { IAccount, Role } from '../account.model';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
-import { IContact, Contact } from '../../contact/contact.model';
 import { Subject } from '../../../../node_modules/rxjs';
-import { ContactService } from '../../contact/contact.service';
-import { IContactAction } from '../../contact/contact.reducer';
-import { ContactActions } from '../../contact/contact.actions';
-import * as Cookies from 'js-cookie';
 import { PageActions } from '../../main/main.actions';
-import { LocationService } from '../../location/location.service';
 import { RestaurantService } from '../../restaurant/restaurant.service';
 import { IRestaurant } from '../../restaurant/restaurant.model';
 import { MatSnackBar } from '../../../../node_modules/@angular/material';
 import { FormBuilder, Validators } from '../../../../node_modules/@angular/forms';
-import { PaymentService } from '../../payment/payment.service';
-import { IPaymentData, IPayment, IMerchantPaymentData } from '../../payment/payment.model';
 import { TransactionService } from '../../transaction/transaction.service';
+import { OrderService } from '../../order/order.service';
+import { IOrder } from '../../order/order.model';
+import { ITransaction } from '../../transaction/transaction.model';
 
 @Component({
   selector: 'app-account-page',
@@ -50,10 +45,9 @@ export class AccountPageComponent implements OnInit, OnDestroy {
     private accountSvc: AccountService,
     private rx: NgRedux<IAppState>,
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
+    private orderSvc: OrderService,
     private restaurantSvc: RestaurantService,
-    private paymentSvc: PaymentService,
     private transactionSvc: TransactionService,
     private snackBar: MatSnackBar
   ) {
@@ -76,22 +70,19 @@ export class AccountPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
-    this.sub = this.route.queryParams.subscribe(params => {
-      this.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
-        self.account = account;
-        const roles = account.roles;
-        if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-          && account.merchants && account.merchants.length > 0
-        ) {
-          self.bMerchant = true;
-          self.reload(account.merchants[0]);
-        }
+    this.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
+      self.account = account;
+      const roles = account.roles;
+      if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1 && account.merchants && account.merchants.length > 0
+      ) {
+        self.bMerchant = true;
+        self.reload(account.merchants[0]);
+      }
 
-        self.accountSvc.getMerchantApplication(account.id).pipe(
-          takeUntil(this.onDestroy$)
-        ).subscribe(x => {
-          this.bApplied = x !== null;
-        });
+      self.accountSvc.getMerchantApplication(account.id).pipe(
+        takeUntil(this.onDestroy$)
+      ).subscribe(x => {
+        this.bApplied = x !== null;
       });
     });
   }
@@ -121,34 +112,18 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   }
 
   reload(merchantId: string) {
-    this.paymentSvc.find({ type: 'credit', merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe(receivables => {
-      this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
-        const payments: IMerchantPaymentData[] = [];
-
-        receivables.map(p => {
-          payments.push({
-            date: p.delivered, received: p.amount, paid: 0, balance: 0, type: 'credit',
-            merchantId: p.merchantId, merchantName: p.merchantName, driverName: p.driverName
-          });
+    this.orderSvc.find({ merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
+      this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
+        let balance = 0;
+        os.map(order => {
+          let totalCost = 0;
+          order.items.map(it => { totalCost += (it.cost * it.quantity); });
+          balance += totalCost;
         });
 
         ts.map(t => {
-          payments.push({
-            date: t.created, received: 0, paid: t.amount, balance: 0, type: 'debit',
-            merchantId: t.toId, merchantName: t.toName, driverName: t.fromName
-          });
+          balance -= t.amount;
         });
-
-        let balance = 0;
-        payments.map(p => {
-          if (p.type === 'credit') {
-            balance += p.received;
-          } else {
-            balance -= p.paid;
-          }
-          p.balance = balance;
-        });
-
         this.balance = balance;
       });
     });
