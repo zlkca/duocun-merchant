@@ -13,7 +13,6 @@ import { RestaurantService } from './restaurant.service';
 // import { ImageUploadModule } from 'angular2-image-upload';
 import { ImageUploaderModule } from '../image-uploader/image-uploader.module';
 import { RestaurantAboutComponent } from './restaurant-about/restaurant-about.component';
-import { RestaurantListPageComponent } from './restaurant-list-page/restaurant-list-page.component';
 import { RestaurantDetailPageComponent } from './restaurant-detail-page/restaurant-detail-page.component';
 import { RestaurantRoutingModule } from './restaurant-routing.module';
 import { ProductModule } from '../product/product.module';
@@ -45,7 +44,6 @@ import { OrderService } from '../order/order.service';
     declarations: [
       RestaurantGridComponent,
       RestaurantAboutComponent,
-      RestaurantListPageComponent,
       RestaurantDetailPageComponent
     ],
     exports: [

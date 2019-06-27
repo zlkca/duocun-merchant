@@ -20,7 +20,7 @@ export class PackagePageComponent implements OnInit, OnDestroy {
   range;
   now;
   lunchEnd;
-  deliverTime;
+  deliverDate;
   onDestroy$ = new Subject();
   restaurant: IRestaurant;
 
@@ -31,33 +31,13 @@ export class PackagePageComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    const now = moment();
-    const dayEnd = moment().startOf('day').set({ hour: 19, minute: 30, second: 0, millisecond: 0 }); // after 19:30 display tomorrow's order
-
-    if (now.isAfter(dayEnd)) {
-      this.deliverTime = moment().startOf('day').add(1, 'days').set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-        .format('YYYY-MM-DD HH:mm:ss');
-
-      const tomorrowStart = moment().startOf('day').add(1, 'days').toDate();
-      const tomorrowEnd = moment().endOf('day').add(1, 'days').toDate();
-      this.range = { $lt: tomorrowEnd, $gt: tomorrowStart };
-    } else {
-      this.deliverTime = moment().startOf('day').set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-        .format('YYYY-MM-DD HH:mm:ss');
-
-      const todayStart = moment().startOf('day').toDate();
-      const todayEnd = moment().endOf('day').toDate();
-      this.range = { $lt: todayEnd, $gt: todayStart };
-    }
+    this.deliverDate = moment().format('YYYY-MM-DD');
   }
 
   ngOnInit() {
     const self = this;
     self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
-      const roles = account.roles;
-      if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-        && account.merchants && account.merchants.length > 0
-      ) {
+      if (this.accountSvc.isMerchantAdmin(account) && account.merchants && account.merchants.length > 0) {
         const merchantId = account.merchants[0];
         self.restaurantSvc.find({ id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IRestaurant[]) => {
           if (rs && rs.length > 0) {

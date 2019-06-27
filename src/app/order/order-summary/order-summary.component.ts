@@ -7,6 +7,7 @@ import { IOrderItem, IOrder } from '../order.model';
 import { IRestaurant } from '../../restaurant/restaurant.model';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-order-summary',
@@ -15,7 +16,6 @@ import { Subject } from '../../../../node_modules/rxjs';
 })
 export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input() restaurant: IRestaurant;
-  @Input() dateRange;
 
   orders: IOrder[] = [];
   list: IOrderItem[];
@@ -32,6 +32,7 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     this.onDestroy$.next();
     this.onDestroy$.complete();
   }
+
   ngOnInit() {
     const self = this;
     if (this.restaurant) {
@@ -62,23 +63,8 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchantId: string) {
     const self = this;
-    self.orderSvc.find({
-      where: {
-        merchantId: merchantId,
-        delivered: self.dateRange
-        // delivered: { $lt: self.sharedSvc.getNextDayStart(1), $gt: self.sharedSvc.getTodayStart()}
-        // delivered: { $lt: self.sharedSvc.getNextDayStart(2), $gt: self.sharedSvc.getNextDayStart(1)}
-      }
-    }).pipe(
-      takeUntil(self.onDestroy$)
-    ).subscribe(orders => {
-      // orders.sort((a: Order, b: Order) => {
-      //   if (this.sharedSvc.compareDateTime(a.created, b.created)) {
-      //     return -1;
-      //   } else {
-      //     return 1;
-      //   }
-      // });
+    const range = { $lt: moment().endOf('day'), $gt: moment().startOf('day') };
+    self.orderSvc.find({ merchantId: merchantId, delivered: range }).pipe(takeUntil(self.onDestroy$)).subscribe(orders => {
       const list = [];
       const ordersWithNote = [];
       orders.map((order: IOrder) => {

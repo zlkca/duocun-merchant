@@ -9,7 +9,6 @@ import { SignupComponent } from './signup/signup.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ForgetPasswordComponent } from './forget-password/forget-password.component';
 import { ProfileFormComponent } from './profile-form/profile-form.component';
-import { AccountListComponent } from './account-list/account-list.component';
 import { AccountFormComponent } from './account-form/account-form.component';
 import { AccountRoutingModule } from './account-routing.module';
 import { AccountService } from './account.service';
@@ -39,13 +38,11 @@ import { OrderService } from '../order/order.service';
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     exports: [
-      AccountListComponent,
       AccountFormComponent
     ],
     declarations: [LoginFormComponent, SignupComponent, ChangePasswordComponent,
         ForgetPasswordComponent,
         ProfileFormComponent,
-        AccountListComponent,
         AccountFormComponent,
         AccountPageComponent,
         BalancePageComponent

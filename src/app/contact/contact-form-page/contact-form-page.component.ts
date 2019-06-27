@@ -128,7 +128,7 @@ export class ContactFormPageComponent implements OnInit, OnDestroy {
     const self = this;
     this.options = [];
     if (this.account && this.account.id) {
-      this.locationSvc.getHistoryLocations(this.account.id).then(a => {
+      this.locationSvc.getHistoryLocations(this.account.id).pipe(takeUntil(this.onDestroy$)).subscribe(a => {
         self.options = a;
       });
     }
@@ -185,12 +185,12 @@ export class ContactFormPageComponent implements OnInit, OnDestroy {
   }
 
   onVerificationCodeInput(e) {
-    if (e.target.value && e.target.value.length === 4) {
-      const code = e.target.value;
-      this.contactSvc.verifyCode(code, this.account.id).subscribe(x => {
-        this.phoneVerified = x;
-      });
-    }
+    // if (e.target.value && e.target.value.length === 4) {
+    //   const code = e.target.value;
+    //   this.contactSvc.verifyCode(code, this.account.id).subscribe(x => {
+    //     this.phoneVerified = x;
+    //   });
+    // }
   }
 
   changeDeliveryDate() {
@@ -217,7 +217,7 @@ export class ContactFormPageComponent implements OnInit, OnDestroy {
     }
     v.modified = new Date();
     v.accountId = this.account.id;
-    v.placeId = this.contact.location.place_id;
+    v.placeId = this.contact.location.placeId;
     v.location = this.contact.location;
     v.address = this.deliveryAddress;
     return new Contact(v);
@@ -261,20 +261,20 @@ export class ContactFormPageComponent implements OnInit, OnDestroy {
   }
 
   sendVerify() {
-    const contact = this.getContact();
-    contact.phone = contact.phone.match(/\d+/g).join('');
+    // const contact = this.getContact();
+    // contact.phone = contact.phone.match(/\d+/g).join('');
 
-    if (contact.phone) {
-      this.contactSvc.sendVerifyMessage(contact).subscribe(x => {
+    // if (contact.phone) {
+    //   this.contactSvc.sendVerifyMessage(contact).subscribe(x => {
 
-      });
-    }
+    //   });
+    // }
   }
 
   verify(code: string, accountId: string) {
-    const v = this.form.value;
-    this.contactSvc.verifyCode(code, accountId).subscribe(x => {
-      this.phoneVerified = x;
-    });
+    // const v = this.form.value;
+    // this.contactSvc.verifyCode(code, accountId).subscribe(x => {
+    //   this.phoneVerified = x;
+    // });
   }
 }

@@ -6,14 +6,11 @@ import { AccountService } from '../../account/account.service';
 import { ILocationHistory, IPlace, ILocation, ILatLng, GeoPoint } from '../../location/location.model';
 import { NgRedux } from '@angular-redux/store';
 import { IAppState } from '../../store';
-import { PageActions } from '../../main/main.actions';
 import { SocketService } from '../../shared/socket.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../account/auth.service';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
-import { ICommand } from '../../shared/command.reducers';
-import { IDeliveryTime } from '../../delivery/delivery.model';
 import { AccountActions } from '../../account/account.actions';
 import { Account, Role } from '../../account/account.model';
 
@@ -38,7 +35,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   orderDeadline = { h: 9, m: 30 };
   overdue;
   afternoon;
-  deliveryTime: IDeliveryTime = { type: '', text: '' };
 
   inRange = false;
   onDestroy$ = new Subject<any>();

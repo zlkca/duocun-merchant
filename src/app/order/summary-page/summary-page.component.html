@@ -4,9 +4,10 @@
   </div>
   <div class="content">
     <div class="deliver-time">
-      <span i18n="@@DeliverTime">Deliver Time</span>: {{deliverTime}}
+      <span i18n="@@DeliverTime">Deliver Time</span>: {{deliverDate}}&nbsp;
+      <span *ngIf="restaurant">{{restaurant.pickupTime}}</span>
     </div>
-    <app-order-summary *ngIf="restaurant" [restaurant]="restaurant" [dateRange]="range"></app-order-summary>
+    <app-order-summary *ngIf="restaurant" [restaurant]="restaurant"></app-order-summary>
     <!-- <mat-tab-group mat-align-tabs="center">
       <mat-tab i18n-label label="LunchToday">
         <app-order-summary [account]="account" [dateRange]="rangeToday"></app-order-summary>

@@ -38,7 +38,7 @@ export const INITIAL_STATE: IAppState = {
     location: null,
     page: 'home',
     cmd: {name: '', args: ''},
-    deliveryTime: {type: '', text: ''},
+    deliveryTime: {text: '', from: null, to: null},
     restaurant: null,
     malls: [DEFAULT_MALL],
     delivery: null,

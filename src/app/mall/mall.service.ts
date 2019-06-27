@@ -12,24 +12,11 @@ import { LocationService } from '../location/location.service';
 })
 export class MallService extends EntityService {
 
-  malls: IMall[] = [
-    {
-      id: '1', name: 'Richmond Hill', type: 'real', lat: 43.8461479, lng: -79.37935279999999, radius: 8,
-      workers: [{ id: '5c9966b7fb86d40a4414eb79', username: 'worker' }]
-    },
-    {
-      id: '2', name: 'Arora', type: 'virtual', lat: 43.995042, lng: -79.442369, radius: 8,
-      workers: [{ id: '5c9966b7fb86d40a4414eb79', username: 'worker' }]
-    },
-    {
-      id: '3', name: 'Markham', type: 'virtual', lat: 43.867055, lng: -79.284616, radius: 8,
-      workers: [{ id: '5c9966b7fb86d40a4414eb79', username: 'worker' }]
-    },
-    {
-      id: '4', name: 'Richmond Hill', type: 'virtual', lat: 43.884244, lng: -79.467925, radius: 8,
-      workers: [{ id: '5c9966b7fb86d40a4414eb79', username: 'worker' }]
-    }
-  ];
+  // mall =   {
+  //     id: '1', name: 'Richmond Hill', type: 'real', lat: 43.8461479, lng: -79.37935279999999, radius: 8,
+  //     placeId: 'ChIJmYOyFEsrK4gRM55wYvQ7Gk0', workers: [{ id: '5c9966b7fb86d40a4414eb79', username: 'worker' }]
+  //   },
+
 
   constructor(
     public http: HttpClient,
@@ -40,41 +27,35 @@ export class MallService extends EntityService {
     this.url = super.getBaseUrl() + 'Malls';
   }
 
-  save(mall: Mall): Observable<any> {
-    return this.http.post(this.url, mall);
-  }
 
-  replace(mall: Mall): Observable<any> {
-    return this.http.put(this.url, mall);
-  }
 
-  calcMalls(center: ILatLng, deliverTimeType: string): Promise<any> {
-    const self = this;
-    // tslint:disable-next-line:no-shadowed-variable
-    return new Promise((resolve: any, reject) => {
-      self.locationSvc.getRoadDistances(center, self.malls).subscribe(rs => {
-        if (rs) {
-          const reallDistances = rs.filter(r => r.type === 'real');
-          self.malls.map((mall: IMall) => {
-            const d = reallDistances.find(rm => rm.id === mall.id);
-            if (d) {
-              mall.distance = d.distance.value / 1000;
-              mall.fullDeliverFee = self.getFullDeliveryFee(mall.distance);
-              if (deliverTimeType === 'immediate') {
-                mall.deliverFee = self.getDeliveryFee(mall.distance);
-              } else {
-                mall.deliverFee = 0;
-              }
-            }
-          });
+  // calcMalls(center: ILatLng, deliverTimeType: string): Promise<any> {
+  //   const self = this;
+  //   // tslint:disable-next-line:no-shadowed-variable
+  //   return new Promise((resolve: any, reject) => {
+  //     self.locationSvc.getRoadDistances(center, self.malls).subscribe(rs => {
+  //       if (rs) {
+  //         const reallDistances = rs.filter(r => r.type === 'real');
+  //         self.malls.map((mall: IMall) => {
+  //           const d = reallDistances.find(rm => rm.id === mall.id);
+  //           if (d) {
+  //             mall.distance = d.distance.value / 1000;
+  //             mall.fullDeliverFee = self.getFullDeliveryFee(mall.distance);
+  //             if (deliverTimeType === 'immediate') {
+  //               mall.deliverFee = self.getDeliveryFee(mall.distance);
+  //             } else {
+  //               mall.deliverFee = 0;
+  //             }
+  //           }
+  //         });
 
-          resolve(self.malls);
-        }
-      }, err => {
-        reject([]);
-      });
-    });
-  }
+  //         resolve(self.malls);
+  //       }
+  //     }, err => {
+  //       reject([]);
+  //     });
+  //   });
+  // }
 
   getFullDeliveryFee(distance: number) {
     if (distance <= 3) {
@@ -95,11 +76,11 @@ export class MallService extends EntityService {
   inRange(center: ILatLng) {
     const self = this;
     let inRange = false;
-    this.malls.filter(x => x.type === 'virtual').map(mall => {
-      if (self.locationSvc.getDirectDistance(center, mall) < mall.radius * 1000) {
-        inRange = true;
-      }
-    });
+    // this.malls.filter(x => x.type === 'virtual').map(mall => {
+    //   if (self.locationSvc.getDirectDistance(center, mall) < mall.radius * 1000) {
+    //     inRange = true;
+    //   }
+    // });
     return inRange;
   }
 }

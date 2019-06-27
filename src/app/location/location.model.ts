@@ -6,16 +6,28 @@ export interface GeoPoint  {
   coordinates?: number[];
 }
 
+// export interface ILocation {
+//   place_id: string;
+//   city: string;
+//   lat: number;
+//   lng: number;
+//   postal_code: string;
+//   province: string;
+//   street_name: string;
+//   street_number: string;
+//   sub_locality: string;
+// }
+
 export interface ILocation {
-  place_id: string;
-  city: string;
+  placeId: string;
+  city?: string;
   lat: number;
   lng: number;
-  postal_code: string;
-  province: string;
-  street_name: string;
-  street_number: string;
-  sub_locality: string;
+  postalCode?: string;
+  province?: string;
+  streetName?: string;
+  streetNumber?: string;
+  subLocality?: string;
 }
 
 export interface ILatLng {

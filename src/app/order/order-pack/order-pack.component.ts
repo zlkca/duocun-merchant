@@ -5,6 +5,8 @@ import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
+import { MomentDateAdapter } from '../../../../node_modules/@angular/material-moment-adapter';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-order-pack',
@@ -13,7 +15,6 @@ import { takeUntil } from '../../../../node_modules/rxjs/operators';
 })
 export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
   @Input() restaurant: IRestaurant;
-  @Input() dateRange;
 
   orders: IOrder[] = [];
   list: IOrderItem[];
@@ -57,9 +58,8 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchantId: string) {
     const self = this;
-    self.orderSvc.find({ merchantId: merchantId, delivered: self.dateRange }).pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((orders: IOrder[]) => {
+    const range = { $lt: moment().endOf('day'), $gt: moment().startOf('day')};
+    self.orderSvc.find({ merchantId: merchantId, delivered: range }).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
       self.orders = orders;
     });
   }

@@ -10,31 +10,42 @@ export interface IRestaurant {
   description?: string;
   location?: GeoPoint;
   ownerId?: string;
-  mallId?: string;
+  malls?: string[]; // mall id
+  inRange?: boolean;
   created?: Date;
   modified?: Date;
-  distance?: number;
+  closed?: Date[];
+  dow?: string[]; // day of week opening
+  isClosed?: boolean;
+  distance?: number; // km
   deliveryFee?: number;
   fullDeliveryFee?: number;
+  deliveryDiscount?: number;
   products?: Product[];
   orders?: Order[];
   pictures?: Picture[];
   address?: Address;
+  order?: number;
+  pickupTime?: string;
 }
 
 // For database
 export class Restaurant implements IRestaurant {
+  id: string;
   name: string;
   description: string;
   location: GeoPoint;
   ownerId: string;
-  mallId: string;
+  malls: string[]; // mall id
   created: Date;
   modified: Date;
-  id: string;
+  closed?: Date[];
+  dow?: string[]; // day of week opening
   products: Product[];
   pictures: Picture[];
   address: Address;
+  order?: number;
+  pickupTime?: string;
   constructor(data?: IRestaurant) {
     Object.assign(this, data);
   }

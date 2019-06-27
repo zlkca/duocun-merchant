@@ -65,7 +65,7 @@ export class AccountFormComponent implements OnInit, OnChanges {
         self.valueSave.emit({ name: 'OnUpdateAccount' });
       });
     } else {
-      self.accountSvc.create(account).subscribe((r: any) => {
+      self.accountSvc.save(account).subscribe((r: any) => {
         self.valueSave.emit({ name: 'OnUpdateAccount' });
       });
     }

@@ -7,6 +7,7 @@ import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
 import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
 import { RestaurantService } from '../../restaurant/restaurant.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-summary-page',
@@ -16,7 +17,7 @@ import { RestaurantService } from '../../restaurant/restaurant.service';
 export class SummaryPageComponent implements OnInit, OnDestroy {
   account: IAccount;
   range;
-  deliverTime;
+  deliverDate;
   onDestroy$ = new Subject();
   restaurant: IRestaurant;
 
@@ -26,41 +27,15 @@ export class SummaryPageComponent implements OnInit, OnDestroy {
     private accountSvc: AccountService,
     private route: ActivatedRoute
   ) {
-    const now = this.sharedSvc.getNow();
-    const dayEnd = this.sharedSvc.getStartOf('day').set({ hour: 19, minute: 30, second: 0, millisecond: 0 });
-
-    if (now.isAfter(dayEnd)) {
-      this.deliverTime = this.sharedSvc.getStartOf('day').add(1, 'days')
-        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-        .format('YYYY-MM-DD HH:mm:ss');
-
-      const tomorrowStart = this.sharedSvc.getStartOf('day').add(1, 'days').toDate();
-      const tomorrowEnd = this.sharedSvc.getEndOf('day').add(1, 'days').toDate();
-      this.range = { $lt: tomorrowEnd, $gt: tomorrowStart };
-    } else {
-      this.deliverTime = this.sharedSvc.getStartOf('day')
-        .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-        .format('YYYY-MM-DD HH:mm:ss');
-
-      const todayStart = this.sharedSvc.getStartOf('day').toDate();
-      const todayEnd = this.sharedSvc.getEndOf('day').toDate();
-      this.range = { $lt: todayEnd, $gt: todayStart };
-    }
+    this.deliverDate = moment().format('YYYY-MM-DD');
   }
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrent().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(account => {
-      const roles = account.roles;
-      if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-        && account.merchants && account.merchants.length > 0
-      ) {
+    self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
+      if (this.accountSvc.isMerchantAdmin(account) && account.merchants && account.merchants.length > 0) {
         const merchantId = account.merchants[0];
-        self.restaurantSvc.find({ where: { id: merchantId } }).pipe(
-          takeUntil(this.onDestroy$)
-        ).subscribe((rs: IRestaurant[]) => {
+        self.restaurantSvc.find({ id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IRestaurant[]) => {
           if (rs && rs.length > 0) {
             self.restaurant = rs[0];
           } else {

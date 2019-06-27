@@ -7,7 +7,6 @@ import { LocationModule } from '../location/location.module';
 import { SharedModule } from '../shared/shared.module';
 import { AccountService } from '../account/account.service';
 import { AuthService } from '../account/auth.service';
-import { RestaurantFilterPageComponent } from './restaurant-filter-page/restaurant-filter-page.component';
 
 @NgModule({
   imports: [
@@ -17,8 +16,7 @@ import { RestaurantFilterPageComponent } from './restaurant-filter-page/restaura
     LocationModule,
   ],
   declarations: [
-    HomeComponent,
-    RestaurantFilterPageComponent
+    HomeComponent
   ],
   exports: [
   ],

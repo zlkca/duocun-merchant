@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { ILocation, ILatLng, ILocationHistory, IDistance, IPlace } from './location.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { IMall } from '../mall/mall.model';
 import { AuthService } from '../account/auth.service';
 import { EntityService } from '../entity.service';
 import { resolve } from 'url';
+import { mergeMap, map } from '../../../node_modules/rxjs/operators';
 
 declare let google: any;
 
@@ -32,8 +33,21 @@ export class LocationService extends EntityService {
     }
   }
 
-  save(locationHistory: ILocationHistory): Observable<any> {
-    return this.http.post(this.url, locationHistory);
+  // query -- { where: { userId: self.account.id, placeId: r.placeId }}
+  // lh --- {
+  //   userId: self.account.id, type: 'history',
+  //   placeId: r.placeId, location: r, created: new Date()
+  // }
+  saveIfNot(query, lh: ILocationHistory): Observable<any> {
+    return this.find(query).pipe(
+      mergeMap((x: ILocationHistory[]) => {
+        if (x && x.length > 0) {
+          return of(null);
+        } else {
+          return this.save(lh);
+        }
+      })
+    );
   }
 
   // find(filter: any): Observable<any> {
@@ -50,39 +64,34 @@ export class LocationService extends EntityService {
   // }
 
   reqPlaces(input: string): Observable<any> {
-    const url = super.getBaseUrl() + `places?input=${input}`;
-    return this.http.get(url);
+    const url = super.getBaseUrl() + 'places?input=' + input;
+    return this.doGet(url);
   }
 
-  getCurrentLocation(): Promise<ILocation> {
-    const self = this;
-    return new Promise((resolve, reject) => {
-      self.getCurrentPosition().then(pos => {
-        self.reqLocationByLatLng(pos).then(x => {
-          resolve(x);
-        });
-      });
-    });
-  }
+  // getCurrentLocation(): Promise<ILocation> {
+  //   const self = this;
+  //   return new Promise((resolve, reject) => {
+  //     self.getCurrentPosition().then(pos => {
+  //       self.reqLocationByLatLng(pos).subscribe((x: ILocation) => {
+  //         resolve(x);
+  //       });
+  //     });
+  //   });
+  // }
 
-  reqLocationByLatLng(pos): Promise<any> {
-    const url = super.getBaseUrl() + `geocode?lat=${pos.lat}&lng=${pos.lng}`;
-    return new Promise((resolve, reject) => {
-      this.http.get(url).subscribe(x => {
-        const ret = this.getLocationFromGeocode(x);
-        resolve(ret);
-      });
-    });
-  }
+  // reqLocationByLatLng(pos): Observable<ILocation> {
+  //   const url = super.getBaseUrl() + 'geocodeLocations?lat=' + pos.lat + '&lng=' + pos.lng;
+  //   return this.http.get(url).pipe(
+  //     map((xs: any[]) => {
+  //       const geoLocations = xs.filter(r => r.types.indexOf('street_address') !== -1);
+  //       return this.getLocationFromGeocode(geoLocations[0]);
+  //     })
+  //   );
+  // }
 
-  reqLocationByAddress(address: string): Promise<any> {
-    const url = super.getBaseUrl() + `geocode?address=${address}`;
-    return new Promise((resolve, reject) => {
-      this.http.get(url).subscribe(x => {
-        const ret = this.getLocationFromGeocode(x);
-        resolve(ret);
-      });
-    });
+  reqLocationByAddress(address: string): Observable<any> {
+    const url = super.getBaseUrl() + 'geocodeLocations?address=' + address;
+    return this.doGet(url);
   }
 
   getCurrentPosition(): Promise<ILatLng> {
@@ -122,29 +131,29 @@ export class LocationService extends EntityService {
     const oLocation = geocodeResult.geometry.location;
     if (addr && addr.length) {
       const loc: ILocation = {
-        place_id: geocodeResult.place_id,
-        street_number: '',
-        street_name: '',
-        sub_locality: '',
+        placeId: geocodeResult.place_id,
+        streetNumber: '',
+        streetName: '',
+        subLocality: '',
         city: '',
         province: '',
-        postal_code: '',
+        postalCode: '',
         lat: typeof oLocation.lat === 'function' ? oLocation.lat() : oLocation.lat,
         lng: typeof oLocation.lng === 'function' ? oLocation.lng() : oLocation.lng
       };
 
       addr.forEach(compo => {
         if (compo.types.indexOf('street_number') !== -1) {
-          loc.street_number = compo.long_name;
+          loc.streetNumber = compo.long_name;
         }
         if (compo.types.indexOf('route') !== -1) {
-          loc.street_name = compo.long_name;
+          loc.streetName = compo.long_name;
         }
         if (compo.types.indexOf('postal_code') !== -1) {
-          loc.postal_code = compo.long_name;
+          loc.postalCode = compo.long_name;
         }
         if (compo.types.indexOf('sublocality_level_1') !== -1 && compo.types.indexOf('sublocality') !== -1) {
-          loc.sub_locality = compo.long_name;
+          loc.subLocality = compo.long_name;
         }
         if (compo.types.indexOf('locality') !== -1) {
           loc.city = compo.long_name;
@@ -160,9 +169,9 @@ export class LocationService extends EntityService {
   }
 
   getAddrString(location: ILocation) {
-    const city = location.sub_locality ? location.sub_locality : location.city;
-    return location.street_number + ' ' + location.street_name + ', ' + city + ', ' + location.province;
-    // + ', ' + location.postal_code;
+    const city = location.subLocality ? location.subLocality : location.city;
+    return location.streetNumber + ' ' + location.streetName + ', ' + city + ', ' + location.province;
+    // + ', ' + location.postalCode;
   }
 
   getAddrStringByPlace(place) {
@@ -181,7 +190,7 @@ export class LocationService extends EntityService {
 
   getRoadDistances(origin: ILatLng, destinations: IMall[]): Observable<any> { // IDistance[]
     const url = super.getBaseUrl() + 'distances';
-    return this.http.post(url, {origins: [origin], destinations: destinations});
+    return this.doPost(url, {origins: [origin], destinations: destinations});
   }
 
   // ---------------------------------
@@ -207,26 +216,25 @@ export class LocationService extends EntityService {
     }
   }
 
-  getHistoryLocations(accountId: string): Promise<IPlace[]> {
-    return new Promise((resolve: any, reject) => {
-      this.find({ where: { userId: accountId } }).subscribe((lhs: ILocationHistory[]) => {
-        const options = [];
+  getHistoryLocations(accountId: string): Observable<IPlace[]> {
+    return this.find({ userId: accountId }).pipe(
+      map((lhs: ILocationHistory[]) => {
+        const options: IPlace[] = [];
         for (let i = lhs.length - 1; i >= 0; i--) {
           const lh = lhs[i];
           const loc = lh.location;
           const p: IPlace = {
             type: 'history',
             structured_formatting: {
-              main_text: loc.street_number + ' ' + loc.street_name,
-              secondary_text: (loc.sub_locality ? loc.sub_locality : loc.city) + ',' + loc.province
+              main_text: loc.streetNumber + ' ' + loc.streetName,
+              secondary_text: (loc.subLocality ? loc.subLocality : loc.city) + ',' + loc.province
             },
             location: loc
           };
           options.push(p);
         }
-
-        resolve(options);
-      });
-    });
+        return options;
+      })
+    );
   }
 }
