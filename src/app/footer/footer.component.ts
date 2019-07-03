@@ -24,7 +24,6 @@ export class FooterComponent implements OnInit, OnDestroy {
   quantity = 0;
   cart;
   malls: IMall[];
-  tips = 3;
   subtotal = 0;
   deliveryFee = 0;
   tax = 0;
