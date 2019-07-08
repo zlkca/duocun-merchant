@@ -128,9 +128,7 @@ export class SettlementComponent implements OnInit, OnDestroy {
     const now = moment();
     this.date.setValue(now);
 
-    this.productSvc.find({ where: { merchantId: this.restaurant.id } }).pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((products: IProduct[]) => {
+    this.productSvc.find({ merchantId: this.restaurant.id }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
       self.products = products;
       self.dateRange = self.getDateRangeForNow(self.type);
       if (self.restaurant) {
@@ -174,9 +172,8 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   reload(merchantId: string, dateRange) {
     const self = this;
-    self.orderSvc.find({ where: { merchantId: merchantId, delivered: dateRange } }).pipe(
-      takeUntil(self.onDestroy$)
-    ).subscribe(orders => {
+    const query = { merchantId: merchantId, delivered: dateRange, status: { $ne: 'del' } };
+    self.orderSvc.find(query).pipe(takeUntil(self.onDestroy$)).subscribe(orders => {
       const productList = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
@@ -230,26 +227,4 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
     // this.updateBalance();
   }
-
-
-  // updateBalance() {
-  //   const received = parseFloat(this.paymentForm.get('received').value);
-
-  //   const payment: IPayment = {
-  //     merchantId: this.restaurant.id,
-  //     merchantName: this.restaurant.name,
-  //     receiverId: this.account.id,
-  //     receiverName: this.account.username,
-  //     credit: received,
-  //     debit: this.total,
-  //     balance: received - this.total,
-  //     delivered: this.dateRange['$gt'],
-  //     created: new Date(),
-  //     modified: new Date(),
-  //   };
-
-  //   this.paymentSvc.save(payment).pipe(takeUntil(this.onDestroy$)).subscribe(x => {
-  //     this.snackBar.open('', '已保存余额', { duration: 2300 });
-  //   });
-  // }
 }

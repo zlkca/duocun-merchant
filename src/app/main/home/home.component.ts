@@ -121,13 +121,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.rx.dispatch({ type: AccountActions.UPDATE, payload: account });
 
     const roles = account.roles;
-    if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-      && account.merchants && account.merchants.length > 0
-    ) {
+    // if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+    //   && account.merchants && account.merchants.length > 0
+    // ) {
       this.router.navigate(['order/summary']);
-    } else { // not authorized for opreration merchant
-      this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
-    }
+    // } else { // not authorized for opreration merchant
+    //   this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
+    // }
   }
 
   wechatLoginHandler(data: any) {

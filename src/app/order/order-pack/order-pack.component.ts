@@ -5,7 +5,6 @@ import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
-import { MomentDateAdapter } from '../../../../node_modules/@angular/material-moment-adapter';
 import * as moment from 'moment';
 
 @Component({
@@ -58,8 +57,9 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchantId: string) {
     const self = this;
-    const range = { $lt: moment().endOf('day'), $gt: moment().startOf('day')};
-    self.orderSvc.find({ merchantId: merchantId, delivered: range }).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
+    const query = { merchantId: merchantId,
+      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate()}}; // , status: { $ne: 'del' }};
+    self.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
       self.orders = orders;
     });
   }

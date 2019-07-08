@@ -52,7 +52,7 @@ export class BalancePageComponent implements OnInit {
   }
 
   reload(merchantId: string) {
-    this.orderSvc.find({ merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
+    this.orderSvc.find({ merchantId: merchantId, status: { $ne: 'del' } }).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
       this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
         let list = [];
         let balance = 0;

@@ -60,7 +60,7 @@ export class OrderHistoryComponent implements OnInit {
 
   reload(clientId) {
     const self = this;
-    self.orderSvc.find({ where: { clientId: clientId } }).subscribe(orders => {
+    self.orderSvc.find({ clientId: clientId, status: { $ne: 'del' } }).subscribe(orders => {
       orders.sort((a: Order, b: Order) => {
         if (this.sharedSvc.compareDateTime(a.created, b.created)) {
           return -1;

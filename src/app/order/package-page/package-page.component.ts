@@ -76,10 +76,6 @@ export class PackagePageComponent implements OnInit, OnDestroy {
     this.onDestroy$.complete();
   }
 
-  onSelect(c) {
-    // this.select.emit({ order: c });
-  }
-
   toDateTimeString(s) {
     return s ? this.sharedSvc.toDateTimeString(s) : '';
   }

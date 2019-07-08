@@ -22,7 +22,6 @@ import { OrderSummaryComponent } from './order-summary/order-summary.component';
 import { OrderPackComponent } from './order-pack/order-pack.component';
 import { SettlementPageComponent } from './settlement-page/settlement-page.component';
 import { SettlementComponent } from './settlement/settlement.component';
-import { ReceivableComponent } from './receivable/receivable.component';
 
 @NgModule({
   imports: [
@@ -52,8 +51,7 @@ import { ReceivableComponent } from './receivable/receivable.component';
     SettlementComponent,
     SummaryPageComponent,
     PackagePageComponent,
-    SettlementPageComponent,
-    ReceivableComponent
+    SettlementPageComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
