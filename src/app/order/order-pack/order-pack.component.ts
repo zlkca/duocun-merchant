@@ -57,8 +57,12 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchantId: string) {
     const self = this;
-    const query = { merchantId: merchantId,
-      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate()}}; // , status: { $ne: 'del' }};
+    const query = {
+      merchantId: merchantId,
+      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate()},
+      status: { $ne: 'del' }
+    };
+
     self.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
       self.orders = orders;
     });

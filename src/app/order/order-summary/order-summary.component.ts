@@ -63,9 +63,13 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchantId: string) {
     const self = this;
-    const range = { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() };
-    const query = { merchantId: merchantId, delivered: range, status: { $ne: 'del' } };
-    self.orderSvc.find(query).pipe(takeUntil(self.onDestroy$)).subscribe(orders => {
+    const query = {
+      merchantId: merchantId,
+      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
+      status: { $ne: 'del' }
+    };
+
+    this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       const list = [];
       const ordersWithNote = [];
       orders.map((order: IOrder) => {
