@@ -29,6 +29,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   tax = 0;
   location: ILocation;
   bHide = false;
+  selected = 'order';
 
   private onDestroy$ = new Subject<void>();
 
@@ -37,21 +38,15 @@ export class FooterComponent implements OnInit, OnDestroy {
     private rx: NgRedux<IAppState>
   ) {
     const self = this;
-    this.rx.select('account').pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((account: Account) => {
+    this.rx.select('account').pipe(takeUntil(this.onDestroy$)).subscribe((account: Account) => {
       self.account = account;
     });
 
-    this.rx.select('location').pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((loc: ILocation) => {
+    this.rx.select('location').pipe(takeUntil(this.onDestroy$)).subscribe((loc: ILocation) => {
       self.location = loc;
     });
 
-    this.rx.select<string>('page').pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(x => {
+    this.rx.select<string>('page').pipe(takeUntil(this.onDestroy$)).subscribe(x => {
 
     });
   }
@@ -65,6 +60,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   toHome() {
+    this.selected = 'order';
     if (this.account) {
       this.router.navigate(['order/summary']);
     } else {
@@ -73,6 +69,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   toPack() {
+    this.selected = 'pack';
     if (this.account) {
         this.router.navigate(['order/package']);
     } else {
@@ -83,6 +80,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   toAccount() {
     const account = this.account;
     const roles = account.roles;
+    this.selected = 'account-setting';
     if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
       && account.merchants && account.merchants.length > 0
     ) {
@@ -93,6 +91,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   toSettlement() {
+    this.selected = 'settlement';
     if (this.account) {
       this.router.navigate(['order/settlement']);
     } else {
@@ -100,11 +99,10 @@ export class FooterComponent implements OnInit, OnDestroy {
     }
   }
 
-  toAdmin() {
-    if (this.account) {
-      this.router.navigate(['admin']);
-    } else {
-      this.router.navigate(['account/login']);
-    }
+  getColor(menu) {
+    return (this.selected === menu) ? '#4285F4' : 'black';
+    // .fill{
+    //   color: '#F4B400'; // '#0F9D58' // green
+    // }
   }
 }

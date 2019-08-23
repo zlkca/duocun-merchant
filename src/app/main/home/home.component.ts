@@ -61,15 +61,11 @@ export class HomeComponent implements OnInit, OnDestroy {
           self.loginSuccessHandler(account);
         } else { // not login
           if (code) { // try wechat login
-            this.accountSvc.wechatLogin(code).pipe(
-              takeUntil(this.onDestroy$)
-            ).subscribe((data: any) => {
+            this.accountSvc.wechatLogin(code).pipe(takeUntil(this.onDestroy$)).subscribe((data: any) => {
               if (data) {
                 self.authSvc.setUserId(data.userId);
                 self.authSvc.setAccessToken(data.id);
-                self.accountSvc.getCurrentUser().pipe(
-                  takeUntil(this.onDestroy$)
-                ).subscribe((acc: Account) => {
+                self.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe((acc: Account) => {
                   if (acc) {
                     self.account = acc;
                     self.loginSuccessHandler(acc);
