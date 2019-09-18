@@ -22,6 +22,7 @@ import { OrderSummaryComponent } from './order-summary/order-summary.component';
 import { OrderPackComponent } from './order-pack/order-pack.component';
 import { SettlementPageComponent } from './settlement-page/settlement-page.component';
 import { SettlementComponent } from './settlement/settlement.component';
+import { ProductService } from '../product/product.service';
 
 @NgModule({
   imports: [
@@ -42,7 +43,8 @@ import { SettlementComponent } from './settlement/settlement.component';
   providers: [
     OrderService,
     RestaurantService,
-    AccountService
+    AccountService,
+    ProductService
   ],
   declarations: [
     OrderHistoryComponent,

@@ -6,6 +6,8 @@ import { SharedService } from '../../shared/shared.service';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import * as moment from 'moment';
+import { ProductService } from '../../product/product.service';
+import { IProduct } from '../../product/product.model';
 
 @Component({
   selector: 'app-order-pack',
@@ -22,6 +24,7 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private orderSvc: OrderService,
+    private productSvc: ProductService,
     private sharedSvc: SharedService
   ) {
 
@@ -59,12 +62,24 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
     const self = this;
     const query = {
       merchantId: merchantId,
-      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate()},
-      status: { $ne: 'del' }
+      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
+      status: { $nin: ['del', 'tmp'] }
     };
 
     self.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
-      self.orders = orders;
+      self.productSvc.find().pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
+        orders.map(order => {
+          const list = [];
+          order.items.map(item => {
+            const product = products.find(x => x.id === item.productId);
+            if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+              list.push(item);
+            }
+          });
+          order.items = list;
+        });
+        self.orders = orders;
+      });
     });
   }
 

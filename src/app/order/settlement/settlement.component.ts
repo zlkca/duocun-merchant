@@ -172,7 +172,7 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   reload(merchantId: string, dateRange) {
     const self = this;
-    const query = { merchantId: merchantId, delivered: dateRange, status: { $ne: 'del' } };
+    const query = { merchantId: merchantId, delivered: dateRange, status: { $nin: ['del', 'tmp'] } };
     this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       const productList = [];
       orders.map((order: IOrder) => {

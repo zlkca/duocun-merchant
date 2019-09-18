@@ -8,6 +8,7 @@ import { IRestaurant } from '../../restaurant/restaurant.model';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
 import * as moment from 'moment';
+import { ProductService } from '../../product/product.service';
 
 @Component({
   selector: 'app-order-summary',
@@ -24,6 +25,7 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private orderSvc: OrderService,
+    private productSvc: ProductService,
     private sharedSvc: SharedService,
   ) {
 
@@ -66,30 +68,41 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     const query = {
       merchantId: merchantId,
       delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
-      status: { $ne: 'del' }
+      status: { $nin: ['del', 'tmp'] }
     };
 
     this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       const list = [];
       const ordersWithNote = [];
-      orders.map((order: IOrder) => {
-        order.items.map(item => {
-          const p = list.find(x => x.productId === item.productId);
-          if (p) {
-            p.quantity = p.quantity + item.quantity;
-          } else {
-            list.push(item);
+      self.productSvc.find().pipe(takeUntil(this.onDestroy$)).subscribe(products => {
+        orders.map((order: IOrder) => {
+
+          const noteItems = [];
+
+          order.items.map(item => {
+            const p = list.find(x => x.productId === item.productId);
+            const product = products.find(x => x.id === item.productId);
+            if (p) {
+              p.quantity = p.quantity + item.quantity;
+            } else {
+              if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+                list.push(item);
+              }
+            }
+            if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+              noteItems.push(item);
+            }
+          });
+
+          if (order.note) {
+            ordersWithNote.push({note: order.note, items: noteItems});
           }
         });
 
-        if (order.note) {
-          ordersWithNote.push(order);
-        }
+        self.list = list;
+        self.ordersWithNote = ordersWithNote;
+        self.orders = orders;
       });
-
-      self.list = list;
-      self.ordersWithNote = ordersWithNote;
-      self.orders = orders;
     });
   }
 
