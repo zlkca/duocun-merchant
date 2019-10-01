@@ -84,6 +84,7 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
             const product = products.find(x => x.id === item.productId);
             if (p) {
               p.quantity = p.quantity + item.quantity;
+              p.productName = product.nameEn;
             } else {
               if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
                 list.push(item);

@@ -72,6 +72,7 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
           const list = [];
           order.items.map(item => {
             const product = products.find(x => x.id === item.productId);
+            item.productName = product.nameEn;
             if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
               list.push(item);
             }

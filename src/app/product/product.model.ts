@@ -3,6 +3,7 @@ import { Restaurant } from '../restaurant/restaurant.model';
 
 export interface IProduct {
   name: string;
+  nameEn?: string;
   description?: string;
   price: number;
   cost: number;

@@ -1,16 +1,16 @@
 <div class="page">
   <div class="header-row">
-    <span class="title-bg" i18n="@@OrderSettlement">Order Settlement</span>
+    <span class="title-bg" i18n="@@Query">Query</span>
   </div>
   <div class="content">
     <mat-tab-group mat-align-tabs="center" *ngIf="restaurant">
-      <mat-tab i18n-label label="DailySettlement">
+      <mat-tab i18n-label label="Daily">
         <app-settlement [restaurant]="restaurant" [type]="'day'"></app-settlement>
       </mat-tab>
-      <mat-tab i18n-label label="WeeklySettlement">
+      <mat-tab i18n-label label="Weekly">
         <app-settlement [restaurant]="restaurant" [type]="'week'"></app-settlement>
       </mat-tab>
-      <mat-tab i18n-label label="MonthlySettlement">
+      <mat-tab i18n-label label="Monthly">
         <app-settlement [restaurant]="restaurant" [type]="'month'"></app-settlement>
       </mat-tab>
     </mat-tab-group>
