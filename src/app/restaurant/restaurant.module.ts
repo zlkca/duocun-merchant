@@ -4,16 +4,12 @@ import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 
-
-// import { ProductModule } from '../product/product.module';
-import { RestaurantGridComponent } from './restaurant-grid/restaurant-grid.component';
 // import { OrderModule } from '../order/order.module';
 import { RestaurantService } from './restaurant.service';
 // import { LocationService } from '../shared/location/location.service';
 // import { ImageUploadModule } from 'angular2-image-upload';
 import { ImageUploaderModule } from '../image-uploader/image-uploader.module';
 import { RestaurantAboutComponent } from './restaurant-about/restaurant-about.component';
-import { RestaurantDetailPageComponent } from './restaurant-detail-page/restaurant-detail-page.component';
 import { RestaurantRoutingModule } from './restaurant-routing.module';
 import { ProductModule } from '../product/product.module';
 
@@ -42,12 +38,9 @@ import { OrderService } from '../order/order.service';
       OrderService
     ],
     declarations: [
-      RestaurantGridComponent,
       RestaurantAboutComponent,
-      RestaurantDetailPageComponent
     ],
     exports: [
-      RestaurantGridComponent,
       RestaurantAboutComponent
     ]
 })

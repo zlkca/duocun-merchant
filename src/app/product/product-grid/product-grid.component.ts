@@ -32,24 +32,10 @@ export class ProductGridComponent implements OnInit, OnChanges, OnDestroy {
   @Input() mode: string;
 
   constructor(
-    private rx: NgRedux<IAppState>,
     private sharedSvc: SharedService,
     public dialog: MatDialog
   ) {
-    // rx.select<ICart>('cart').pipe(
-    //   takeUntil(this.onDestroy$)
-    // ).subscribe((cart: ICart) => {
-    //   this.cart = cart;
-    //   if (this.groupedProducts) {
-    //     const categoryIds = Object.keys(this.groupedProducts);
-    //     categoryIds.map(categoryId => {
-    //       this.groupedOrders[categoryId].map(order => {
-    //         const cartItem = cart.items.find(item => item.productId === order.productId);
-    //         order.quantity = cartItem ? cartItem.quantity : 0;
-    //       });
-    //     });
-    //   }
-    // });
+
   }
 
   ngOnInit() {
@@ -100,34 +86,6 @@ export class ProductGridComponent implements OnInit, OnChanges, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
     });
-  }
-
-  addToCart(p: IProduct) {
-    // if (this.cart.items && this.cart.items.length > 0) {
-    //   if (p.merchantId === this.cart.items[0].merchantId) {
-    //     this.rx.dispatch({
-    //       type: CartActions.ADD_TO_CART, payload:
-    //         { productId: p.id, productName: p.name, price: p.price, pictures: p.pictures,
-    //           merchantId: p.merchantId, restaurantName: p.restaurant ? p.restaurant.name : '' }
-    //     });
-    //   } else {
-    //     this.openDialog();
-    //   }
-    // } else {
-    //   this.rx.dispatch({
-    //     type: CartActions.ADD_TO_CART, payload:
-    //       { productId: p.id, productName: p.name, price: p.price, pictures: p.pictures,
-    //         merchantId: p.merchantId, restaurantName: p.restaurant ? p.restaurant.name : '' }
-    //   });
-    // }
-  }
-
-  removeFromCart(p: IProduct) {
-    // this.rx.dispatch({
-    //   type: CartActions.REMOVE_FROM_CART,
-    //   payload: { productId: p.id, productName: p.name, price: p.price, pictures: p.pictures,
-    //      merchantId: p.merchantId, restaurantName: p.restaurant ? p.restaurant.name : '' }
-    // });
   }
 
   getProductImage(p: Product) {
