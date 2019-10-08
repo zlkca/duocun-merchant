@@ -3,7 +3,7 @@ export const environment = {
   API_VERSION: 'api',
   SECURE: window.location.protocol === 'https:',
   API_BASE: window.location.protocol + '//' + window.location.hostname,
-  API_URL: window.location.origin + '/api/',
+  API_URL: 'https://duocun.com.cn' + '/api/',
   APP_URL: window.location.origin,
   MEDIA_URL: window.location.origin + '/media/',
   APP: 'duocun',
