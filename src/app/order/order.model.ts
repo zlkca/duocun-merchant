@@ -1,6 +1,6 @@
 import { Product, IProduct } from '../product/product.model';
 // import { Picture } from '../picture.model';
-import { Address } from '../entity.model';
+import { Address, IMerchant } from '../entity.model';
 import { Restaurant } from '../restaurant/restaurant.model';
 
 export interface IOrder {
@@ -10,6 +10,7 @@ export interface IOrder {
   clientName?: string;
   merchantId?: string;
   merchantName?: string;
+  merchant?: IMerchant;
   stuffId?: string;
   status?: string;
   clientStatus?: string;

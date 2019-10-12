@@ -37,9 +37,7 @@ export class BalancePageComponent implements OnInit {
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrent().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(account => {
+    self.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
       const roles = account.roles;
       if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
         && account.merchants && account.merchants.length > 0
@@ -59,12 +57,13 @@ export class BalancePageComponent implements OnInit {
         let balance = 0;
         os.map(order => {
           let totalCost = 0;
-          order.items.map(it => { totalCost += (it.cost * it.quantity); });
+          order.items.map(it => { totalCost += (it.product.cost * it.quantity); });
           const item = list.find(it => moment(it.date).isSame(order.delivered), 'day');
           if (item) {
             item.paid += totalCost;
           } else {
-            list.push({ date: order.delivered, description: order.merchantName, type: 'credit', paid: totalCost, received: 0, balance: 0 });
+            list.push({ date: order.delivered, description: order.merchant.name,
+              type: 'credit', paid: totalCost, received: 0, balance: 0 });
           }
         });
 

@@ -26,7 +26,6 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   phone;
   address;
   onDestroy$ = new Subject<any>();
-  restaurants: IRestaurant[] = [];
   phoneVerified;
   form;
   errMsg;
@@ -55,12 +54,6 @@ export class AccountPageComponent implements OnInit, OnDestroy {
     this.rx.dispatch({
       type: PageActions.UPDATE_URL,
       payload: 'account-setting'
-    });
-
-    this.restaurantSvc.find().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(rs => {
-      self.restaurants = rs;
     });
 
     this.form = this.fb.group({
@@ -118,7 +111,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
         let balance = 0;
         os.map(order => {
           let totalCost = 0;
-          order.items.map(it => { totalCost += (it.cost * it.quantity); });
+          order.items.map(it => { totalCost += (it.product.cost * it.quantity); });
           balance += totalCost;
         });
 
