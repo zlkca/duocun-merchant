@@ -2,6 +2,8 @@ import { Picture } from '../picture.model';
 import { Restaurant } from '../restaurant/restaurant.model';
 
 export interface IProduct {
+  _id?: string;
+  id?: string;
   name: string;
   description?: string;
   price: number;
@@ -10,7 +12,6 @@ export interface IProduct {
   categoryId: string;
   created?: Date;
   modified?: Date;
-  id?: string;
   owner?: Restaurant;
   restaurant?: Restaurant;
   category?: Category;

@@ -5,6 +5,7 @@ import { GeoPoint } from '../location/location.model';
 import { Order } from '../order/order.model';
 
 export interface IRestaurant {
+  _id?: string;
   id?: string;
   name?: string;
   description?: string;
@@ -12,6 +13,7 @@ export interface IRestaurant {
   ownerId?: string;
   malls?: string[]; // mall id
   inRange?: boolean;
+  delivered?: Date;
   created?: Date;
   modified?: Date;
   closed?: Date[];

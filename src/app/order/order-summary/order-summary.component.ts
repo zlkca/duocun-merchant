@@ -38,7 +38,7 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     const self = this;
     if (this.restaurant) {
-      self.reload(this.restaurant.id);
+      self.reload(this.restaurant);
     } else {
       self.orders = [];
     }
@@ -63,27 +63,27 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     // });
   }
 
-  reload(merchantId: string) {
+  reload(merchant: IRestaurant) {
     const self = this;
+    const delivered = moment().set({ hour: 11, minute: 45, second: 0, millisecond: 0 }); // fix me
     const query = {
-      merchantId: merchantId,
-      delivered: { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
+      merchantId: merchant._id,
+      delivered: delivered.toISOString(), // { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
       status: { $nin: ['del', 'tmp'] }
     };
 
     this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       const list = [];
       const ordersWithNote = [];
-      self.productSvc.find().pipe(takeUntil(this.onDestroy$)).subscribe(products => {
         orders.map((order: IOrder) => {
 
           const noteItems = [];
 
           order.items.map(item => {
-            const p = list.find(x => x.productId === item.productId);
-            const product = products.find(x => x.id === item.productId);
-            if (p) {
-              p.quantity = p.quantity + item.quantity;
+            const it = list.find(x => x.product._id === item.product._id);
+            const product = item.product;
+            if (it) {
+              it.quantity = it.quantity + item.quantity;
             } else {
               if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
                 list.push(item);
@@ -103,13 +103,12 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
         self.ordersWithNote = ordersWithNote;
         self.orders = orders;
       });
-    });
   }
 
   ngOnChanges(v) {
     if (v.restaurant && v.restaurant.currentValue) {
       const restaurant = v.restaurant.currentValue;
-      this.reload(restaurant.id);
+      this.reload(restaurant);
     }
   }
 

@@ -15,7 +15,7 @@
       </mat-expansion-panel-header>
   
       <div *ngFor="let item of order.items" class="text-sm row">
-        <div class="col-6 product-col">{{item.productName}}</div>
+        <div class="col-6 product-col">{{item.product.name}}</div>
         <div class="col-3 quantity-col">x{{item.quantity}}</div>
         <!-- <div class="col-3 price-col">${{item.price * item.quantity | number : '1.2-2'}}</div> -->
       </div>
@@ -27,6 +27,6 @@
   <span i18n="@@Products">Products</span>:
 </div>
 <div *ngFor="let item of list" class="row">
-  <div class="col-8">{{item.productName}}</div>
+  <div class="col-8">{{item.product.name}}</div>
   <div class="col-4">x{{item.quantity}}</div>
 </div>
