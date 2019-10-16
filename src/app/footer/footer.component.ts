@@ -71,7 +71,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   toPack() {
     this.selected = 'pack';
     if (this.account) {
-        this.router.navigate(['order/package']);
+      this.router.navigate(['order/package']);
     } else {
       this.router.navigate(['account/login']);
     }
@@ -79,14 +79,18 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   toAccount() {
     const account = this.account;
-    const roles = account.roles;
-    this.selected = 'account-setting';
-    if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
-      && account.merchants && account.merchants.length > 0
-    ) {
-      this.router.navigate(['account/setting'], { queryParams: { merchant: true } });
+    if (account) {
+      const roles = account.roles;
+      this.selected = 'account-setting';
+      if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
+        && account.merchants && account.merchants.length > 0
+      ) {
+        this.router.navigate(['account/setting'], { queryParams: { merchant: true } });
+      } else {
+        this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
+      }
     } else {
-      this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
+      this.router.navigate(['account/login']);
     }
   }
 

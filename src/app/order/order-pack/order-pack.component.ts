@@ -65,7 +65,7 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     self.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
-      orders.map(order => {
+      orders.filter(x => x.merchant._id === merchant._id).map(order => {
         const list = [];
         order.items.map(item => {
           const product = item.product;

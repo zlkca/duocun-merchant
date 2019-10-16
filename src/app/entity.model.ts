@@ -3,7 +3,7 @@ export interface IEntity {
 }
 
 export interface IMerchant {
-  id?: string;
+  _id?: string;
   name?: string;
 }
 
