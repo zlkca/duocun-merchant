@@ -4,7 +4,7 @@
   </div>
   <div class="content">
     <div class="deliver-time">
-      <span i18n="@@DeliverTime">Deliver Time</span>: {{deliverDate}}&nbsp;
+      <span i18n="@@PickupTime">Pickup Time</span>: {{deliverDate}}&nbsp;
       <span *ngIf="restaurant">{{restaurant.pickupTime}}</span>
     </div>
     <app-order-summary *ngIf="restaurant" [restaurant]="restaurant"></app-order-summary>

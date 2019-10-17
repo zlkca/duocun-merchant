@@ -9,7 +9,6 @@ import { RestaurantService } from './restaurant.service';
 // import { LocationService } from '../shared/location/location.service';
 // import { ImageUploadModule } from 'angular2-image-upload';
 import { ImageUploaderModule } from '../image-uploader/image-uploader.module';
-import { RestaurantAboutComponent } from './restaurant-about/restaurant-about.component';
 import { RestaurantRoutingModule } from './restaurant-routing.module';
 import { ProductModule } from '../product/product.module';
 
@@ -38,10 +37,8 @@ import { OrderService } from '../order/order.service';
       OrderService
     ],
     declarations: [
-      RestaurantAboutComponent,
     ],
     exports: [
-      RestaurantAboutComponent
     ]
 })
 export class RestaurantModule { }
