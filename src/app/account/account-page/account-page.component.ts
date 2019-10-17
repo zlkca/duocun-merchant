@@ -113,9 +113,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
       this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
         let balance = 0;
         os.map(order => {
-          let totalCost = 0;
-          order.items.map(it => { totalCost += (it.product.cost * it.quantity); });
-          balance += totalCost;
+          balance += order.cost;
         });
 
         ts.map(t => {

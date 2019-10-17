@@ -48,14 +48,6 @@ export class SharedService {
     return s.split('.')[0].replace('T', ' ');
   }
 
-  getTotal(items) {
-    let total = 0;
-    items.forEach(item => {
-      total += item.price * item.quantity;
-    });
-    return total.toFixed(2);
-  }
-
   getTodayStart() {
     const m = moment(); // .utcOffset(0);
     return m.set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();

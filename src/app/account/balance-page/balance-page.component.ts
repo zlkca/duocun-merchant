@@ -56,8 +56,7 @@ export class BalancePageComponent implements OnInit {
         let list = [];
         let balance = 0;
         os.map(order => {
-          let totalCost = 0;
-          order.items.map(it => { totalCost += (it.product.cost * it.quantity); });
+          const totalCost = order.cost;
           const item = list.find(it => moment(it.date).isSame(order.delivered), 'day');
           if (item) {
             item.paid += totalCost;
