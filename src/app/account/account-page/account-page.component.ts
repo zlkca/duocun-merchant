@@ -31,7 +31,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   errMsg;
   sub;
   bMerchant = false;
-  bApplied = false;
+  bApplied = true;
   merchantId: string;
   balance = 0;
 
@@ -74,9 +74,9 @@ export class AccountPageComponent implements OnInit, OnDestroy {
           self.reload(account.merchants[0]);
         }
 
-        self.accountSvc.getMerchantApplication(account.id).pipe(takeUntil(this.onDestroy$)).subscribe(x => {
-          this.bApplied = x !== null;
-        });
+        // self.accountSvc.getMerchantApplication(account.id).pipe(takeUntil(this.onDestroy$)).subscribe(x => {
+        //   this.bApplied = x !== null;
+        // });
       } else {
         // fix me
       }
@@ -109,8 +109,9 @@ export class AccountPageComponent implements OnInit, OnDestroy {
 
   reload(merchantId: string) {
     const q = { merchantId: merchantId, status: { $nin: ['del', 'tmp'] } };
-    this.orderSvc.find(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
-      this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
+    const qTransaction = { type: 'debit', toId: merchantId };
+    this.orderSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
+      this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
         let balance = 0;
         os.map(order => {
           balance += order.cost;

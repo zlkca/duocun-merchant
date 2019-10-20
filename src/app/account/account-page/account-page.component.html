@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div class="row balance-block" *ngIf="bMerchant && balance" (click)="toPaymentPage()">
+    <div class="row balance-block" *ngIf="bMerchant" (click)="toPaymentPage()">
       <div class="col-12 title-sm" i18n="@@Receivables">Receivables</div>
       <div class="col-12 title-bg">${{balance | number : '1.2-2'}}</div>
       <div class="col-12 title-sm">
