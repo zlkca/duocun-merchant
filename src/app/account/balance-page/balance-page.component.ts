@@ -51,8 +51,9 @@ export class BalancePageComponent implements OnInit {
 
   reload(merchantId: string) {
     const q = { merchantId: merchantId, status: { $nin: ['del', 'tmp'] } };
-    this.orderSvc.find(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
-      this.transactionSvc.find({ type: 'debit', toId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
+    const qTransaction = { type: 'debit', toId: merchantId };
+    this.orderSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
+      this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
         let list = [];
         let balance = 0;
         os.map(order => {
@@ -61,7 +62,7 @@ export class BalancePageComponent implements OnInit {
           if (item) {
             item.paid += totalCost;
           } else {
-            list.push({ date: order.delivered, description: order.merchant.name,
+            list.push({ date: order.delivered, description: order.merchantName,
               type: 'credit', paid: totalCost, received: 0, balance: 0 });
           }
         });
