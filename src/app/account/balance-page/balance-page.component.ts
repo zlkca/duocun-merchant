@@ -68,12 +68,12 @@ export class BalancePageComponent implements OnInit {
         });
 
         ts.map(t => {
-          const item = list.find(l => moment(l.date).isSame(moment(t.created), 'day'));
-          if (item) {
-            item.received = t.amount;
-          } else {
+          // const item = list.find(l => moment(l.date).isSame(moment(t.created), 'day'));
+          // if (item) {
+          //   item.received = t.amount;
+          // } else {
             list.push({ date: t.created, description: '', type: t.type, paid: 0, received: t.amount, balance: 0 });
-          }
+          // }
         });
 
         list = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
