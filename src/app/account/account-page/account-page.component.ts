@@ -110,9 +110,12 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   reload(merchantId: string) {
     const q = { merchantId: merchantId, status: { $nin: ['del', 'tmp'] } };
     const qTransaction = { type: 'debit', toId: merchantId };
+
     this.orderSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
       this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
+
         let balance = 0;
+
         os.map(order => {
           balance += order.cost;
         });
