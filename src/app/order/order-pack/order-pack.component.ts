@@ -57,7 +57,13 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchant: IRestaurant) {
     const self = this;
-    const delivered = moment().set({ hour: 11, minute: 45, second: 0, millisecond: 0 }); // fix me
+    const now = moment();
+    const todayEnd = moment().set({ hour: 20, minute: 0, second: 0, millisecond: 0 });
+    let delivered = moment().set({ hour: 11, minute: 45, second: 0, millisecond: 0 });
+    if (now.isAfter(todayEnd)) {
+      delivered = moment().add(1, 'day').set({ hour: 11, minute: 45, second: 0, millisecond: 0 });
+    }
+
     const query = {
       merchantId: merchant._id,
       delivered: delivered.toISOString(), // { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
@@ -91,7 +97,7 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(v) {
     if (v.restaurant && v.restaurant.currentValue) {
       const restaurant = v.restaurant.currentValue;
-      this.reload(restaurant.id);
+      this.reload(restaurant);
     }
   }
 
