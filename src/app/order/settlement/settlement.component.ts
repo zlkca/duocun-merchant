@@ -48,9 +48,7 @@ export class SettlementComponent implements OnInit, OnDestroy {
     });
 
     const self = this;
-    self.accountSvc.getCurrent().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(account => {
+    self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
       self.account = account;
       // self.assignmentSvc.find({where: {driverId: account.id}}).pipe(takeUntil(self.onDestroy$)).subscribe(xs => {
       //   self.assignments = xs;
@@ -177,7 +175,7 @@ export class SettlementComponent implements OnInit, OnDestroy {
       const productList = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
-          const p = productList.find(x => x.productId === item.productId);
+          const p = productList.find(it => it.product._id === item.product._id);
           if (p) {
             p.quantity = p.quantity + item.quantity;
           } else {
@@ -189,12 +187,8 @@ export class SettlementComponent implements OnInit, OnDestroy {
       self.list = productList;
       self.total = 0;
       self.list.map(it => {
-        const p = self.products.find(x => x.id === it.productId);
-        if (p) {
-          it.cost = p.cost;
-          it.total = it.cost * it.quantity;
-          self.total += it.total;
-        }
+        it.total = it.product.cost * it.quantity;
+        self.total += it.total;
       });
     });
   }

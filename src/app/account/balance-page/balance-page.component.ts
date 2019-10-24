@@ -92,17 +92,23 @@ export class BalancePageComponent implements OnInit {
           item.balance = balance;
         });
 
-        list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
-          const aMoment = moment(a.date);
-          const bMoment = moment(b.date);
+        const myList = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
+          const aMoment = moment(a.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+          const bMoment = moment(b.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
           if (aMoment.isAfter(bMoment)) {
             return -1; // b at top
-          } else {
+          } else if (bMoment.isAfter(aMoment)) {
             return 1;
+          } else {
+            if (a.type === 'debit' && b.type === 'credit') {
+              return -1;
+            } else {
+              return 1;
+            }
           }
         });
 
-        this.dataSource = new MatTableDataSource(list);
+        this.dataSource = new MatTableDataSource(myList);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
       });
