@@ -77,12 +77,18 @@ export class BalancePageComponent implements OnInit {
         });
 
         list = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
-          const aMoment = moment(a.date);
-          const bMoment = moment(b.date);
+          const aMoment = moment(a.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+          const bMoment = moment(b.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
           if (aMoment.isAfter(bMoment)) {
             return 1; // b at top
-          } else {
+          } else if (bMoment.isAfter(aMoment)) {
             return -1;
+          } else {
+            if (a.type === 'debit' && b.type === 'credit') {
+              return 1;
+            } else {
+              return -1;
+            }
           }
         });
 

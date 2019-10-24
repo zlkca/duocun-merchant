@@ -70,28 +70,29 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   onDateChange(type: string, event: MatDatepickerInputEvent<Date>) {
     const startDate = moment(event.value);
+    const merchantId = this.restaurant._id;
     this.date.setValue(startDate);
 
     if (this.type === 'day') {
       const dayStart = moment(event.value).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
       const dayEnd = moment(event.value).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(this.restaurant.id, this.dateRange);
+      this.reload(merchantId, this.dateRange);
     } else if (this.type === 'week') {
       const dayStart = moment(event.value).startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
       const dayEnd = moment(event.value).endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(this.restaurant.id, this.dateRange);
+      this.reload(merchantId, this.dateRange);
     } else if (this.type === 'month') {
       const dayStart = moment(event.value).startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
       const dayEnd = moment(event.value).endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(this.restaurant.id, this.dateRange);
+      this.reload(merchantId, this.dateRange);
     }
 
     // this.deliverTime = startDate.set({ hour: 11, minute: 45, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss');
     // this.range = this.getDateRange(startDate);
-    // this.reload(this.restaurant.id, this.dateRange);
+    // this.reload(merchantId, this.dateRange);
   }
 
   getDateRangeForNow(type) {
@@ -123,10 +124,11 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
+    const merchantId = this.restaurant._id;
     const now = moment();
     this.date.setValue(now);
 
-    this.productSvc.find({ merchantId: this.restaurant.id }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
+    this.productSvc.find({ merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
       self.products = products;
       self.dateRange = self.getDateRangeForNow(self.type);
       if (self.restaurant) {
