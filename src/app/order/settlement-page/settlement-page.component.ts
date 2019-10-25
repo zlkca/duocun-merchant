@@ -39,9 +39,7 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
         const roles = account.roles;
         if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1 && account.merchants && account.merchants.length > 0) {
           const merchantId = account.merchants[0];
-          self.restaurantSvc.find({ _id: merchantId }).pipe(
-            takeUntil(this.onDestroy$)
-          ).subscribe((rs: IRestaurant[]) => {
+          self.restaurantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IRestaurant[]) => {
             if (rs && rs.length > 0) {
               self.restaurant = rs[0];
             } else {

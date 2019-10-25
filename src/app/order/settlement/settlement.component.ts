@@ -132,7 +132,7 @@ export class SettlementComponent implements OnInit, OnDestroy {
       self.products = products;
       self.dateRange = self.getDateRangeForNow(self.type);
       if (self.restaurant) {
-        self.reload(self.restaurant.id, self.dateRange);
+        self.reload(merchantId, self.dateRange);
       } else {
         self.list = [];
       }
