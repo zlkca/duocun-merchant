@@ -33,6 +33,7 @@ export interface IRestaurant {
 
 // For database
 export class Restaurant implements IRestaurant {
+  _id: string;
   id: string;
   name: string;
   description: string;

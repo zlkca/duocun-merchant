@@ -48,9 +48,7 @@ export class SettlementComponent implements OnInit, OnDestroy {
     });
 
     const self = this;
-    self.accountSvc.getCurrent().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe(account => {
+    self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
       self.account = account;
       // self.assignmentSvc.find({where: {driverId: account.id}}).pipe(takeUntil(self.onDestroy$)).subscribe(xs => {
       //   self.assignments = xs;
@@ -72,28 +70,29 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   onDateChange(type: string, event: MatDatepickerInputEvent<Date>) {
     const startDate = moment(event.value);
+    const merchantId = this.restaurant._id;
     this.date.setValue(startDate);
 
     if (this.type === 'day') {
       const dayStart = moment(event.value).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
       const dayEnd = moment(event.value).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(this.restaurant.id, this.dateRange);
+      this.reload(merchantId, this.dateRange);
     } else if (this.type === 'week') {
       const dayStart = moment(event.value).startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
       const dayEnd = moment(event.value).endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(this.restaurant.id, this.dateRange);
+      this.reload(merchantId, this.dateRange);
     } else if (this.type === 'month') {
       const dayStart = moment(event.value).startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
       const dayEnd = moment(event.value).endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(this.restaurant.id, this.dateRange);
+      this.reload(merchantId, this.dateRange);
     }
 
     // this.deliverTime = startDate.set({ hour: 11, minute: 45, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss');
     // this.range = this.getDateRange(startDate);
-    // this.reload(this.restaurant.id, this.dateRange);
+    // this.reload(merchantId, this.dateRange);
   }
 
   getDateRangeForNow(type) {
@@ -125,14 +124,15 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
+    const merchantId = this.restaurant._id;
     const now = moment();
     this.date.setValue(now);
 
-    this.productSvc.find({ merchantId: this.restaurant.id }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
+    this.productSvc.find({ merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
       self.products = products;
       self.dateRange = self.getDateRangeForNow(self.type);
       if (self.restaurant) {
-        self.reload(self.restaurant.id, self.dateRange);
+        self.reload(merchantId, self.dateRange);
       } else {
         self.list = [];
       }
@@ -177,10 +177,11 @@ export class SettlementComponent implements OnInit, OnDestroy {
       const productList = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
-          const p = productList.find(x => x.productId === item.productId);
+          const p = productList.find(it => it.product._id === item.product._id);
           if (p) {
             p.quantity = p.quantity + item.quantity;
           } else {
+            item.product.name = item.product.nameEn;
             productList.push(Object.assign({}, item));
           }
         });
@@ -189,12 +190,8 @@ export class SettlementComponent implements OnInit, OnDestroy {
       self.list = productList;
       self.total = 0;
       self.list.map(it => {
-        const p = self.products.find(x => x.id === it.productId);
-        if (p) {
-          it.cost = p.cost;
-          it.total = it.cost * it.quantity;
-          self.total += it.total;
-        }
+        it.total = it.product.cost * it.quantity;
+        self.total += it.total;
       });
     });
   }

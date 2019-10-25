@@ -21,8 +21,8 @@
   <div class="product-list">
     <div class="order" *ngFor="let item of list">
       <div class="row product-block">
-          <div class="col-5 product-col">{{item.productName}}</div>
-          <div class="col-2 cost-col">${{item.cost | number : '1.2-2'}}</div>
+          <div class="col-5 product-col">{{item.product.name}}</div>
+          <div class="col-2 cost-col">${{item.product.cost | number : '1.2-2'}}</div>
           <div class="col-2 quantity-col">x{{item.quantity}}</div>
           <div class="col-3 cost-col">${{item.total | number : '1.2-2'}}</div>
       </div>

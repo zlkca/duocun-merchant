@@ -17,6 +17,7 @@ import { FooterComponent } from './footer/footer.component';
 import { HttpClientModule } from '../../node_modules/@angular/common/http';
 import { EntityService } from './entity.service';
 import { createStore } from '../../node_modules/redux';
+import { AccountService } from './account/account.service';
 
 
 const appRoutes: Routes = [
@@ -92,7 +93,9 @@ const appRoutes: Routes = [
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     bootstrap: [AppComponent],
-    providers: [EntityService,
+    providers: [
+      AccountService,
+      EntityService,
       AuthService
     ]
 
