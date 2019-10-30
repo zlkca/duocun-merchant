@@ -82,12 +82,10 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
           }
         });
         order.items = list;
+      });
 
-        merchant.phases.map(phase => {
-          if (this.sharedSvc.isSameTime(order.delivered, phase.pickup)) {
-            phase.orders.push(order);
-          }
-        });
+      merchant.phases.map(phase => {
+        phase.orders = orders.filter(o => this.sharedSvc.isSameTime(o.delivered, phase.pickup));
       });
 
     });

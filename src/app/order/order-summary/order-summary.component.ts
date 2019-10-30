@@ -78,10 +78,10 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
         phase.orders = [];
       });
 
-      const list = [];
-      const ordersWithNote = [];
-      orders.map((order: IOrder) => {
+      // const list = [];
+      // const ordersWithNote = [];
 
+      orders.map((order: IOrder) => {
         // const noteItems = [];
         if (environment.language === 'en') {
           order.items.map(item => {
@@ -108,25 +108,20 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
         // if (order.note) {
         //   ordersWithNote.push({note: order.note, items: noteItems});
         // }
-
-        merchant.phases.map(phase => {
-          if (this.sharedSvc.isSameTime(order.delivered, phase.pickup)) {
-            phase.orders.push(order);
-          }
-        });
       });
 
       merchant.phases.map((phase: IPhase) => {
-        phase.orders.map(order => {
-          phase.items = this.getItemList(order);
-        });
+        phase.orders = orders.filter(o => this.sharedSvc.isSameTime(o.delivered, phase.pickup));
 
+        phase.items = this.getItemList(phase.orders);
         phase.ordersWithNote = this.getNoteList(phase.orders);
       });
 
-      self.list = list;
-      self.ordersWithNote = ordersWithNote;
-      self.orders = orders;
+      // self.list = list;
+      // self.ordersWithNote = ordersWithNote;
+      // self.orders = orders;
+
+      self.restaurant = merchant;
     });
   }
 
@@ -152,20 +147,22 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     return ordersWithNote;
   }
 
-  getItemList(order) {
+  getItemList(orders) {
     const list = [];
-    order.items.map(item => {
-      const it = list.find(x => x.productId === item.productId);
-      if (it) {
-        it.quantity = it.quantity + item.quantity;
-      } else {
-        if (item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-          list.push(item);
+    orders.map(order => {
+      order.items.map(item => {
+        const it = list.find(x => x.productId === item.product._id);
+        if (it) {
+          it.quantity = it.quantity + item.quantity;
+        } else {
+          if (item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+            list.push(item);
+          }
         }
-      }
-      // if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-      //   noteItems.push(item);
-      // }
+        // if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+        //   noteItems.push(item);
+        // }
+      });
     });
     return list;
   }
