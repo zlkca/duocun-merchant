@@ -11,6 +11,7 @@ import { FormBuilder } from '../../../../node_modules/@angular/forms';
 import { MatDatepickerInputEvent, MatSnackBar } from '../../../../node_modules/@angular/material';
 import * as moment from 'moment';
 import { AccountService } from '../../account/account.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-settlement',
@@ -177,6 +178,10 @@ export class SettlementComponent implements OnInit, OnDestroy {
       const productList = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
+          if (environment.language === 'en') {
+            item.productName = item.product.nameEN;
+            item.product.name = item.product.nameEN;
+          }
           const p = productList.find(it => it.product._id === item.product._id);
           if (p) {
             p.quantity = p.quantity + item.quantity;

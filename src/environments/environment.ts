@@ -24,5 +24,6 @@ export const environment = {
   },
   STRIPE: {
     CLIENT_KEY: 'pk_test_RzVW9LLaIZANExpYhNg2x4Zu'
-  }
+  },
+  language: 'zh'
 };

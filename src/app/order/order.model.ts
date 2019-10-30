@@ -13,14 +13,9 @@ export interface IOrder {
   merchant?: IMerchant;
   stuffId?: string;
   status?: string;
-  clientStatus?: string;
-  workerStatus?: string;
-  merchantStatus?: string;
   note?: string;
   address?: string;
-  delivered?: Date;
-  created?: Date;
-  modified?: Date;
+
   items?: IOrderItem[];
   deliveryAddress?: Address;
   deliveryFee?: number;
@@ -28,6 +23,10 @@ export interface IOrder {
   total?: number;
   price?: number;
   cost?: number;
+
+  delivered?: string;
+  created?: string;
+  modified?: string;
 }
 
 export class Order implements IOrder {
@@ -43,9 +42,7 @@ export class Order implements IOrder {
   merchantStatus: string;
   note: string;
   address: string;
-  delivered: Date;
-  created: Date;
-  modified: Date;
+
   items: OrderItem[];
   deliveryAddress: Address;
   deliveryFee: number;
@@ -53,6 +50,11 @@ export class Order implements IOrder {
   total: number;
   price?: number;
   cost?: number;
+
+  delivered?: string;
+  created?: string;
+  modified?: string;
+
   constructor(data?: IOrder) {
     Object.assign(this, data);
   }

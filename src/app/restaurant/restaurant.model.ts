@@ -4,6 +4,15 @@ import { Address } from '../entity.model';
 import { GeoPoint } from '../location/location.model';
 import { Order } from '../order/order.model';
 
+export interface IPhase {
+  orderEnd: string; // date time string
+  pickup: string;   // date time string
+
+  orders?: any[]; // do not save to database
+  items?: any[]; // do not save to database
+  ordersWithNote?: any[]; // do not save to dababase
+}
+
 export interface IRestaurant {
   _id?: string;
   id?: string;
@@ -29,6 +38,8 @@ export interface IRestaurant {
   address?: Address;
   order?: number;
   pickupTime?: string;
+
+  phases?: IPhase[];
 }
 
 // For database
@@ -49,6 +60,8 @@ export class Restaurant implements IRestaurant {
   address: Address;
   order?: number;
   pickupTime?: string;
+
+  phases?: IPhase[];
   constructor(data?: IRestaurant) {
     Object.assign(this, data);
   }

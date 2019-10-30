@@ -16,8 +16,6 @@ import * as moment from 'moment';
 })
 export class SummaryPageComponent implements OnInit, OnDestroy {
   account: IAccount;
-  range;
-  deliverDate;
   onDestroy$ = new Subject();
   restaurant: IRestaurant;
 
@@ -27,7 +25,6 @@ export class SummaryPageComponent implements OnInit, OnDestroy {
     private accountSvc: AccountService,
     private route: ActivatedRoute
   ) {
-    this.deliverDate = moment().format('YYYY-MM-DD');
   }
 
   ngOnInit() {

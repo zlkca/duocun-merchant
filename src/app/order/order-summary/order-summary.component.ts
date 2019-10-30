@@ -4,11 +4,13 @@ import { OrderService } from '../../order/order.service';
 import { SharedService } from '../../shared/shared.service';
 import { IOrderItem, IOrder } from '../order.model';
 // import { SocketService } from '../../shared/socket.service';
-import { IRestaurant } from '../../restaurant/restaurant.model';
+import { IRestaurant, IPhase } from '../../restaurant/restaurant.model';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
 import * as moment from 'moment';
 import { ProductService } from '../../product/product.service';
+
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-order-summary',
@@ -65,51 +67,110 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchant: IRestaurant) {
     const self = this;
-    const now = moment();
-    const todayEnd = moment().set({ hour: 20, minute: 0, second: 0, millisecond: 0 });
-    let delivered = moment().set({ hour: 11, minute: 45, second: 0, millisecond: 0 });
-    if (now.isAfter(todayEnd)) {
-      delivered = moment().add(1, 'day').set({ hour: 11, minute: 45, second: 0, millisecond: 0 });
-    }
-
     const query = {
       merchantId: merchant._id,
-      delivered: delivered.toISOString(), // { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
+      delivered: { $lt: moment().endOf('day').toISOString(), $gt: moment().startOf('day').toISOString() },
       status: { $nin: ['del', 'tmp'] }
     };
 
     this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
+      merchant.phases.map((phase: IPhase) => {
+        phase.orders = [];
+      });
+
       const list = [];
       const ordersWithNote = [];
-        orders.map((order: IOrder) => {
+      orders.map((order: IOrder) => {
 
-          const noteItems = [];
-
+        // const noteItems = [];
+        if (environment.language === 'en') {
           order.items.map(item => {
-            const it = list.find(x => x.product._id === item.product._id);
-            const product = item.product;
-            if (it) {
-              it.quantity = it.quantity + item.quantity;
-            } else {
-              if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-                list.push(item);
-              }
-            }
-            if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-              noteItems.push(item);
-            }
+            item.productName = item.product.nameEN;
+            item.product.name = item.product.nameEN;
           });
+        }
+        // order.items.map(item => {
+        //   const it = list.find(x => x.product._id === item.product._id);
+        //   const product = item.product;
 
-          if (order.note) {
-            ordersWithNote.push({note: order.note, items: noteItems});
+        //   if (it) {
+        //     it.quantity = it.quantity + item.quantity;
+        //   } else {
+        //     if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+        //       list.push(item);
+        //     }
+        //   }
+        //   if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+        //     noteItems.push(item);
+        //   }
+        // });
+
+        // if (order.note) {
+        //   ordersWithNote.push({note: order.note, items: noteItems});
+        // }
+
+        merchant.phases.map(phase => {
+          if (this.sharedSvc.isSameTime(order.delivered, phase.pickup)) {
+            phase.orders.push(order);
           }
         });
-
-        self.list = list;
-        self.ordersWithNote = ordersWithNote;
-        self.orders = orders;
       });
+
+      merchant.phases.map((phase: IPhase) => {
+        phase.orders.map(order => {
+          phase.items = this.getItemList(order);
+        });
+
+        phase.ordersWithNote = this.getNoteList(phase.orders);
+      });
+
+      self.list = list;
+      self.ordersWithNote = ordersWithNote;
+      self.orders = orders;
+    });
   }
+
+  getNoteList(orders) {
+    const ordersWithNote = [];
+
+    orders.map(order => {
+      const noteItems = [];
+
+      order.items.map(item => {
+        const product = item.product;
+
+        if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+          noteItems.push(item);
+        }
+      });
+
+      if (order.note) {
+        ordersWithNote.push({ note: order.note, items: noteItems });
+      }
+    });
+
+    return ordersWithNote;
+  }
+
+  getItemList(order) {
+    const list = [];
+    order.items.map(item => {
+      const it = list.find(x => x.productId === item.productId);
+      if (it) {
+        it.quantity = it.quantity + item.quantity;
+      } else {
+        if (item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+          list.push(item);
+        }
+      }
+      // if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+      //   noteItems.push(item);
+      // }
+    });
+    return list;
+  }
+
+
 
   ngOnChanges(v) {
     if (v.restaurant && v.restaurant.currentValue) {

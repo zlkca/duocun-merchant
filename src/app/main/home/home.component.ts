@@ -82,7 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               }
             });
           } else { // no code in router
-            this.router.navigate(['account/setting']);
+            this.router.navigate(['account/login']);
           }
         }
       }, err => {

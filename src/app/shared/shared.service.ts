@@ -20,6 +20,13 @@ export class SharedService {
     return this.subject.asObservable();
   }
 
+  isSameTime(dt: string, t: string) {
+    const t1 = moment(dt);
+    const h = +(t.split(':')[0]);
+    const m = +(t.split(':')[1]);
+    const t2 = moment().set({ hour: h, minute: m, second: 0, millisecond: 0 });
+    return t1.isSame(t2);
+  }
   // initSocket() {
   //   const socket = io('http://localhost:3000');
   //   socket.on('[POST]http://localhost:3000/api/Orders', function (data) {

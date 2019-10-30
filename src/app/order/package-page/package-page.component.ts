@@ -17,10 +17,6 @@ import * as moment from 'moment';
 export class PackagePageComponent implements OnInit, OnDestroy {
 
   account: IAccount;
-  range;
-  now;
-  lunchEnd;
-  deliverDate;
   onDestroy$ = new Subject();
   restaurant: IRestaurant;
 
@@ -31,7 +27,6 @@ export class PackagePageComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.deliverDate = moment().format('YYYY-MM-DD');
   }
 
   ngOnInit() {

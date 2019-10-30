@@ -1,11 +1,12 @@
 import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
-import { IRestaurant } from '../../restaurant/restaurant.model';
+import { IRestaurant, IPhase } from '../../restaurant/restaurant.model';
 import { IOrder, IOrderItem } from '../order.model';
 import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import * as moment from 'moment';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-order-pack',
@@ -57,31 +58,38 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
 
   reload(merchant: IRestaurant) {
     const self = this;
-    const now = moment();
-    const todayEnd = moment().set({ hour: 20, minute: 0, second: 0, millisecond: 0 });
-    let delivered = moment().set({ hour: 11, minute: 45, second: 0, millisecond: 0 });
-    if (now.isAfter(todayEnd)) {
-      delivered = moment().add(1, 'day').set({ hour: 11, minute: 45, second: 0, millisecond: 0 });
-    }
-
     const query = {
       merchantId: merchant._id,
-      delivered: delivered.toISOString(), // { $lt: moment().endOf('day').toDate(), $gt: moment().startOf('day').toDate() },
+      delivered: { $lt: moment().endOf('day').toISOString(), $gt: moment().startOf('day').toISOString() },
       status: { $nin: ['del', 'tmp'] }
     };
 
     self.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
-      orders.filter(x => x.merchant._id === merchant._id).map(order => {
+      merchant.phases.map((phase: IPhase) => {
+        phase.orders = [];
+      });
+
+      orders.map((order: IOrder) => {
         const list = [];
         order.items.map(item => {
           const product = item.product;
+          if (environment.language === 'en') {
+            item.productName = item.product.nameEN;
+            item.product.name = item.product.nameEN;
+          }
           if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
             list.push(item);
           }
         });
         order.items = list;
-        self.orders = orders;
+
+        merchant.phases.map(phase => {
+          if (this.sharedSvc.isSameTime(order.delivered, phase.pickup)) {
+            phase.orders.push(order);
+          }
+        });
       });
+
     });
   }
 
