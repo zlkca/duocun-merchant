@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 5001 --configuration=zh-Hans",
-    "build": "ng build --i18n-file src/locale/messages.zh-Hans.xlf --i18n-format xlf --i18n-locale zh-Hans --prod --deploy-url=/partner/ --base-href=/partner/",
+    "build": "ng build --i18n-file src/locale/messages.zh-Hans.xlf --i18n-format xlf --i18n-locale zh-Hans --prod --base-href=/partner/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

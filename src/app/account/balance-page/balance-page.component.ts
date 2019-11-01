@@ -56,24 +56,19 @@ export class BalancePageComponent implements OnInit {
       this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
         let list = [];
         let balance = 0;
-        os.map(order => {
-          const totalCost = order.cost;
-          const item = list.find(it => moment(it.date).isSame(order.delivered), 'day');
+        os.map(order => { // same day cost add up
+          const cost = order.cost;
+          const item = list.find(it => it.date === order.delivered);
           if (item) {
-            item.paid += totalCost;
+            item.paid += cost;
           } else {
-            list.push({ date: order.delivered, description: order.merchantName,
-              type: 'credit', paid: totalCost, received: 0, balance: 0 });
+            list.push({ date: order.delivered, description: order.merchantName, type: 'credit',
+              paid: order.cost, received: 0, balance: 0 });
           }
         });
 
-        ts.map(t => {
-          // const item = list.find(l => moment(l.date).isSame(moment(t.created), 'day'));
-          // if (item) {
-          //   item.received = t.amount;
-          // } else {
-            list.push({ date: t.created, description: '', type: t.type, paid: 0, received: t.amount, balance: 0 });
-          // }
+        ts.map(t => { // duocun pay merchant
+          list.push({ date: t.created, description: '', type: t.type, paid: 0, received: t.amount, balance: 0 });
         });
 
         list = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
