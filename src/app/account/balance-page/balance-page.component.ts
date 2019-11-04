@@ -49,6 +49,16 @@ export class BalancePageComponent implements OnInit {
     });
   }
 
+  groupBy(items, key) {
+    return items.reduce((result, item) => ({
+      ...result,
+      [item[key]]: [
+        ...(result[item[key]] || []),
+        item,
+      ],
+    }), {});
+  }
+
   reload(merchantId: string) {
     const q = { merchantId: merchantId, status: { $nin: ['del', 'tmp'] } };
     const qTransaction = { type: 'debit', toId: merchantId };
@@ -56,30 +66,36 @@ export class BalancePageComponent implements OnInit {
       this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
         let list = [];
         let balance = 0;
-        os.map(order => { // same day cost add up
-          const cost = order.cost;
-          const item = list.find(it => it.date === order.delivered);
-          if (item) {
-            item.paid += cost;
-          } else {
-            list.push({ date: order.delivered, description: order.merchantName, type: 'credit',
-              paid: order.cost, received: 0, balance: 0 });
-          }
+        const receivables = this.groupBy(os, 'delivered');
+        // const list: IMerchantPaymentData[] = [];
+        Object.keys(receivables).map(dt => {
+          const orders = receivables[dt];
+          let amount = 0;
+          orders.map(order => { amount += order.cost; });
+          list.push({
+            date: dt, description: '', type: 'credit', paid: amount, received: 0, balance: 0
+          });
         });
 
         ts.map(t => { // duocun pay merchant
-          list.push({ date: t.created, description: '', type: t.type, paid: 0, received: t.amount, balance: 0 });
+          list.push({ date: t.created, description: '', type: 'debit', paid: 0, received: t.amount, balance: 0 });
         });
 
         list = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
-          const aMoment = moment(a.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-          const bMoment = moment(b.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-          if (aMoment.isAfter(bMoment)) {
-            return 1; // b at top
-          } else if (bMoment.isAfter(aMoment)) {
-            return -1;
+          const aMoment = moment(a.date);
+          const bMoment = moment(b.date);
+          if (aMoment.isSame(bMoment, 'day')) {
+            if (a.type === 'debit') {
+              return 1;
+            } else {
+              if (aMoment.isAfter(bMoment)) {
+                return 1; // a to bottom
+              } else {
+                return -1;
+              }
+            }
           } else {
-            if (a.type === 'debit' && b.type === 'credit') {
+            if (aMoment.isAfter(bMoment)) {
               return 1;
             } else {
               return -1;
@@ -88,20 +104,29 @@ export class BalancePageComponent implements OnInit {
         });
 
         list.map(item => {
-          balance += item.paid;
-          balance -= item.received;
+          if (item.type === 'credit') {
+            balance += item.paid;
+          } else {
+            balance -= item.received;
+          }
           item.balance = balance;
         });
 
         const myList = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
-          const aMoment = moment(a.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-          const bMoment = moment(b.date).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-          if (aMoment.isAfter(bMoment)) {
-            return -1; // b at top
-          } else if (bMoment.isAfter(aMoment)) {
-            return 1;
+          const aMoment = moment(a.date);
+          const bMoment = moment(b.date);
+          if (aMoment.isSame(bMoment, 'day')) {
+            if (a.type === 'debit') {
+              return -1;
+            } else {
+              if (aMoment.isAfter(bMoment)) {
+                return -1; // a to top
+              } else {
+                return 1;
+              }
+            }
           } else {
-            if (a.type === 'debit' && b.type === 'credit') {
+            if (aMoment.isAfter(bMoment)) {
               return -1;
             } else {
               return 1;
