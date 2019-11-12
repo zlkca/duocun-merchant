@@ -91,7 +91,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
   applyMerchant() {
     if (this.form.valid) {
       const v = this.form.value;
-      this.accountSvc.applyMerchant(this.account.id, v.name).pipe(
+      this.accountSvc.applyMerchant(this.account._id, v.name).pipe(
         takeUntil(this.onDestroy$)
       ).subscribe(x => {
         this.snackBar.open('', '已申请成为商户，请等待批准。', { duration: 1000 });
@@ -107,29 +107,17 @@ export class AccountPageComponent implements OnInit, OnDestroy {
     this.errMsg = '';
   }
 
-  reload(merchantId: string) {
-    const q = { merchantId: merchantId, status: { $nin: ['del', 'tmp'] } };
-    const qTransaction = { type: 'debit', toId: merchantId };
-
-    this.orderSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
-      this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
-
-        let balance = 0;
-
-        os.map(order => {
-          balance += order.cost;
-        });
-
-        ts.map(t => {
-          balance -= t.amount;
-        });
-        this.balance = balance;
-      });
+  reload(merchantAccountId: string) {
+    this.accountSvc.quickFind({ _id: merchantAccountId }).pipe(takeUntil(this.onDestroy$)).subscribe((accounts: IAccount[]) => {
+      if (accounts && accounts.length > 0) {
+        this.balance = accounts[0].balance;
+      } else {
+        this.balance = 0;
+      }
     });
   }
 
   toPaymentPage() {
     this.router.navigate(['account/balance']);
   }
-
 }

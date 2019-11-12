@@ -10,13 +10,13 @@ export enum Role {
 }
 
 export interface IAccount {
+  _id?: string;
   type: string; // wechat, google, fb
   realm?: string;
   username?: string;
   email?: string;
   emailVerified?: boolean;
   phone?: string;
-  id?: string;
   password?: string;
   sex?: string;
   openid?: string; // wechat openid
@@ -26,6 +26,7 @@ export interface IAccount {
   address?: IAddress;
   roles?: number[];
   merchants?: string[]; // merchant Ids
+  balance?: number;
 }
 
 export class Account implements IAccount {
@@ -45,6 +46,8 @@ export class Account implements IAccount {
   address?: Address;
   roles?: number[];
   merchants?: string[]; // merchant Ids
+  balance?: number;
+
   constructor(data?: IAccount) {
     Object.assign(this, data);
   }

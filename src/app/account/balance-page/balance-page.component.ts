@@ -17,7 +17,7 @@ import { ITransaction } from '../../transaction/transaction.model';
   styleUrls: ['./balance-page.component.scss']
 })
 export class BalancePageComponent implements OnInit {
-  displayedColumns: string[] = ['date', 'paid', 'received', 'balance'];
+  displayedColumns: string[] = ['created', 'paid', 'received', 'balance'];
   dataSource: MatTableDataSource<IMerchantPaymentData>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -60,84 +60,80 @@ export class BalancePageComponent implements OnInit {
   }
 
   reload(merchantId: string) {
-    const q = { merchantId: merchantId, status: { $nin: ['del', 'tmp'] } };
-    const qTransaction = { type: 'debit', toId: merchantId };
-    this.orderSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe((os: IOrder[]) => {
-      this.transactionSvc.quickFind(qTransaction).pipe(takeUntil(this.onDestroy$)).subscribe((ts: ITransaction[]) => {
-        let list = [];
-        let balance = 0;
-        const receivables = this.groupBy(os, 'delivered');
-        // const list: IMerchantPaymentData[] = [];
-        Object.keys(receivables).map(dt => {
-          const orders = receivables[dt];
-          let amount = 0;
-          orders.map(order => { amount += order.cost; });
-          list.push({
-            date: dt, description: '', type: 'credit', paid: amount, received: 0, balance: 0
-          });
-        });
-
-        ts.map(t => { // duocun pay merchant
-          list.push({ date: t.created, description: '', type: 'debit', paid: 0, received: t.amount, balance: 0 });
-        });
-
-        list = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
-          const aMoment = moment(a.date);
-          const bMoment = moment(b.date);
-          if (aMoment.isSame(bMoment, 'day')) {
-            if (a.type === 'debit') {
-              return 1;
-            } else {
-              if (aMoment.isAfter(bMoment)) {
-                return 1; // a to bottom
-              } else {
-                return -1;
-              }
-            }
-          } else {
-            if (aMoment.isAfter(bMoment)) {
-              return 1;
-            } else {
-              return -1;
-            }
-          }
-        });
-
-        list.map(item => {
-          if (item.type === 'credit') {
-            balance += item.paid;
-          } else {
-            balance -= item.received;
-          }
-          item.balance = balance;
-        });
-
-        const myList = list.sort((a: IMerchantPaymentData, b: IMerchantPaymentData) => {
-          const aMoment = moment(a.date);
-          const bMoment = moment(b.date);
-          if (aMoment.isSame(bMoment, 'day')) {
-            if (a.type === 'debit') {
-              return -1;
-            } else {
-              if (aMoment.isAfter(bMoment)) {
-                return -1; // a to top
-              } else {
-                return 1;
-              }
-            }
-          } else {
-            if (aMoment.isAfter(bMoment)) {
-              return -1;
-            } else {
-              return 1;
-            }
-          }
-        });
-
-        this.dataSource = new MatTableDataSource(myList);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+    const q = {'$or': [{ fromId: merchantId }, { toId: merchantId }]};
+    this.transactionSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
+      let list = [];
+      let balance = 0;
+      const credits = ts.filter(t => t.fromId === merchantId);
+      const debits = ts.filter(t => t.toId === merchantId);
+      const receivables = this.groupBy(credits, 'created');
+      Object.keys(receivables).map(dt => {
+        const its = receivables[dt];
+        let amount = 0;
+        its.map(it => { amount += it.amount; });
+        list.push({created: dt, description: '', type: 'credit', paid: amount, received: 0, balance: 0});
       });
+
+      debits.map(t => {
+        const description = t.fromId === merchantId ? t.toName : t.fromName;
+        list.push({ created: t.created, description: description, type: 'debit', paid: 0, received: t.amount, balance: 0 });
+      });
+
+      list = list.sort((a: any, b: any) => {
+        const aMoment = moment(a.created);
+        const bMoment = moment(b.created);
+        if (aMoment.isSame(bMoment, 'day')) {
+          if (a.type === 'debit') {
+            return 1;
+          } else {
+            if (aMoment.isAfter(bMoment)) {
+              return 1; // a to bottom
+            } else {
+              return -1;
+            }
+          }
+        } else {
+          if (aMoment.isAfter(bMoment)) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+      });
+
+      list.map(item => {
+        if (item.type === 'credit') {
+          balance += item.paid;
+        } else {
+          balance -= item.received;
+        }
+        item.balance = balance;
+      });
+
+      const rows = list.sort((a: any, b: any) => {
+        const aMoment = moment(a.created);
+        const bMoment = moment(b.created);
+        if (aMoment.isSame(bMoment, 'day')) {
+          if (a.type === 'debit') {
+            return -1;
+          } else {
+            if (aMoment.isAfter(bMoment)) {
+              return -1; // a to top
+            } else {
+              return 1;
+            }
+          }
+        } else {
+          if (aMoment.isAfter(bMoment)) {
+            return -1;
+          } else {
+            return 1;
+          }
+        }
+      });
+
+      this.dataSource = new MatTableDataSource(rows);
+      this.dataSource.sort = this.sort;
     });
   }
 }

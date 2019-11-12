@@ -6,7 +6,7 @@ import { empty, of } from 'rxjs';
 
 
 import { environment } from '../../environments/environment';
-import { Account, Role } from './account.model';
+import { Account, Role, IAccount } from './account.model';
 
 import { NgRedux } from '@angular-redux/store';
 import { AccountActions } from './account.actions';
@@ -53,7 +53,7 @@ export class AccountService extends EntityService {
     return this.http.post(this.url + '/getMerchantApplication', { accountId: accountId });
   }
 
-  signup(account: Account): Observable<any> {
+  signup(account: IAccount): Observable<any> {
     return this.http.post(this.url + '/signup', account);
   }
 
