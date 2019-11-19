@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgRedux } from '@angular-redux/store';
 import { AuthService } from '../auth.service';
 import { AccountService } from '../account.service';
-import { Account } from '../../account/account.model';
+import { Account, IAccount } from '../../account/account.model';
 import { IAppState } from '../../store';
 import { PageActions } from '../../main/main.actions';
 
@@ -51,12 +51,12 @@ export class SignupComponent implements OnInit {
 
   onSignup() {
     const v = this.form.value;
-    const account = new Account({
+    const account: IAccount = {
       username: v.username,
       email: '', // v.email,
       password: v.password,
       type: 'user'
-    });
+    };
     this.authSvc.removeCookies();
 
     if (this.form.invalid) {

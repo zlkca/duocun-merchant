@@ -71,9 +71,9 @@ export class AccountPageComponent implements OnInit, OnDestroy {
         if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1 && account.merchants && account.merchants.length > 0
         ) {
           self.bMerchant = true;
-          self.reload(account.merchants[0]);
         }
 
+        self.reload(account.merchants[0]);
         // self.accountSvc.getMerchantApplication(account.id).pipe(takeUntil(this.onDestroy$)).subscribe(x => {
         //   this.bApplied = x !== null;
         // });

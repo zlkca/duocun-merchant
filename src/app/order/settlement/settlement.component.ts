@@ -75,18 +75,18 @@ export class SettlementComponent implements OnInit, OnDestroy {
     this.date.setValue(startDate);
 
     if (this.type === 'day') {
-      const dayStart = moment(event.value).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
-      const dayEnd = moment(event.value).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+      const dayStart = moment(event.value).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
+      const dayEnd = moment(event.value).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
       this.reload(merchantId, this.dateRange);
     } else if (this.type === 'week') {
-      const dayStart = moment(event.value).startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
-      const dayEnd = moment(event.value).endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+      const dayStart = moment(event.value).startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
+      const dayEnd = moment(event.value).endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
       this.reload(merchantId, this.dateRange);
     } else if (this.type === 'month') {
-      const dayStart = moment(event.value).startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
-      const dayEnd = moment(event.value).endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+      const dayStart = moment(event.value).startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
+      const dayEnd = moment(event.value).endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
       this.reload(merchantId, this.dateRange);
     }
@@ -98,16 +98,16 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   getDateRangeForNow(type) {
     if (this.type === 'day') {
-      const dayStart = moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
-      const dayEnd = moment().set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+      const dayStart = moment().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
+      const dayEnd = moment().set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       return { $lt: dayEnd, $gt: dayStart };
     } else if (this.type === 'week') {
-      const dayStart = moment().startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
-      const dayEnd = moment().endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+      const dayStart = moment().startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
+      const dayEnd = moment().endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       return { $lt: dayEnd, $gt: dayStart };
     } else if (this.type === 'month') {
-      const dayStart = moment().startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toDate();
-      const dayEnd = moment().endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toDate();
+      const dayStart = moment().startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
+      const dayEnd = moment().endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       return { $lt: dayEnd, $gt: dayStart };
     }
 

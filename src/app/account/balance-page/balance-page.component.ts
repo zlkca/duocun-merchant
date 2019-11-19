@@ -59,19 +59,44 @@ export class BalancePageComponent implements OnInit {
     }), {});
   }
 
+  groupBySameDay(items, key) {
+    const groups = {};
+    items.map(it => {
+      let date = null;
+      if (it.hasOwnProperty('delivered')) {
+        date = moment(it.delivered).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+      } else {
+        date = moment(it[key]).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+      }
+      const dt = Object.keys(groups).find(x => moment(x).isSame(date, 'day'));
+
+      if (dt) {
+        groups[dt].push(it);
+      } else {
+        groups[date.toISOString()] = [it];
+      }
+    });
+
+    return groups;
+  }
+
   reload(merchantId: string) {
-    const q = {'$or': [{ fromId: merchantId }, { toId: merchantId }]};
+    const q = {
+      '$or': [{ fromId: merchantId }, { toId: merchantId }],
+      status: { $ne: 'del' },
+      action: { $ne: 'duocun cancel order from merchant' }
+    };
     this.transactionSvc.quickFind(q).pipe(takeUntil(this.onDestroy$)).subscribe(ts => {
       let list = [];
       let balance = 0;
       const credits = ts.filter(t => t.fromId === merchantId);
       const debits = ts.filter(t => t.toId === merchantId);
-      const receivables = this.groupBy(credits, 'created');
+      const receivables = this.groupBySameDay(credits, 'created');
       Object.keys(receivables).map(dt => {
         const its = receivables[dt];
         let amount = 0;
         its.map(it => { amount += it.amount; });
-        list.push({created: dt, description: '', type: 'credit', paid: amount, received: 0, balance: 0});
+        list.push({ created: dt, description: '', type: 'credit', paid: amount, received: 0, balance: 0 });
       });
 
       debits.map(t => {
