@@ -22,6 +22,10 @@ import { AccountService } from './account/account.service';
 
 const appRoutes: Routes = [
     {
+      path: 'log',
+      loadChildren: './log/log.module#LogModule'
+    },
+    {
       path: 'payment',
       loadChildren: './payment/payment.module#PaymentModule'
     },

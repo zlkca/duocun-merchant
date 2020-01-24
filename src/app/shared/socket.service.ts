@@ -15,7 +15,7 @@ export class SocketService {
     private authSvc: AuthService
   ) {
     const url = environment.API_BASE + '/';
-    this.socket = io(url);
+    // this.socket = io(url);
   }
 
   init(token: string) {

@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
 // import { RestaurantApi, LoopBackFilter, GeoPoint, Order, OrderApi, Product, Picture, PictureApi } from '../lb-sdk';
 import * as moment from 'moment';
-import { Restaurant, IRestaurant } from './restaurant.model';
-import { Observable } from 'rxjs';
-import { mergeMap, flatMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { IMerchant } from './restaurant.model';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../account/auth.service';
 import { EntityService } from '../entity.service';
 import { IDeliveryTime } from '../delivery/delivery.model';
-import { IMall } from '../mall/mall.model';
 
 @Injectable()
 export class RestaurantService extends EntityService {
@@ -21,7 +18,7 @@ export class RestaurantService extends EntityService {
     this.url = super.getBaseUrl() + 'Restaurants';
   }
 
-  isClosed(restaurant: IRestaurant, deliveryTime: IDeliveryTime) {
+  isClosed(restaurant: IMerchant, deliveryTime: IDeliveryTime) {
     const deliverDate = moment(deliveryTime.from);
     // const tomorrow = moment().add(1, 'days');
     // const afterTomorrow = moment().add(2, 'days');
@@ -37,7 +34,7 @@ export class RestaurantService extends EntityService {
     }
   }
 
-  isClosePerWeek(restaurant: IRestaurant, deliveryTime: IDeliveryTime) {
+  isClosePerWeek(restaurant: IMerchant, deliveryTime: IDeliveryTime) {
     if (restaurant.dow && restaurant.dow.length > 0) {
       const openAll = restaurant.dow.find(d => d === 'all');
       if (openAll) {

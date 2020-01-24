@@ -24,8 +24,8 @@ export class SharedService {
     const t1 = moment(dt);
     const h = +(t.split(':')[0]);
     const m = +(t.split(':')[1]);
-    const t2 = moment().set({ hour: h, minute: m, second: 0, millisecond: 0 });
-    return t1.isSame(t2);
+    const t2 = moment(dt).set({ hour: h, minute: m, second: 0, millisecond: 0 });
+    return t1.toISOString() === t2.toISOString();
   }
   // initSocket() {
   //   const socket = io('http://localhost:3000');

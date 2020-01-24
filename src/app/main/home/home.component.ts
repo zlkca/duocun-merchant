@@ -56,16 +56,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     self.route.queryParamMap.pipe(takeUntil(this.onDestroy$)).subscribe(queryParams => {
       const code = queryParams.get('code');
 
-      self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
+      self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
         if (account) {
           self.loginSuccessHandler(account);
         } else { // not login
           if (code) { // try wechat login
-            this.accountSvc.wechatLogin(code).pipe(takeUntil(this.onDestroy$)).subscribe((data: any) => {
-              if (data) {
-                self.authSvc.setUserId(data.userId);
-                self.authSvc.setAccessToken(data.id);
-                self.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe((acc: Account) => {
+            this.accountSvc.wechatLogin(code).pipe(takeUntil(this.onDestroy$)).subscribe((tokenId: string) => {
+              if (tokenId) {
+                self.authSvc.setAccessTokenId(tokenId);
+                self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe((acc: Account) => {
                   if (acc) {
                     self.account = acc;
                     self.loginSuccessHandler(acc);
@@ -92,9 +91,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // this.accountSvc.login('bentoboy', 'duocun').subscribe((data: any) => {
     //   if (data) {
-    //     self.authSvc.setUserId(data.userId);
-    //     self.authSvc.setAccessToken(data.id);
-    //     self.accountSvc.getCurrentUser().subscribe((account: Account) => {
+    //     self.authSvc.setAccessTokenId(data.id);
+    //     self.accountSvc.getCurrentAccount().subscribe((account: Account) => {
     //       if (account) {
     //         self.rx.dispatch({ type: AccountActions.UPDATE, payload: account }); // update header, footer icons
     //         self.router.navigate(['order/summary']);
@@ -126,13 +124,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     // }
   }
 
-  wechatLoginHandler(data: any) {
+  wechatLoginHandler(tokenId: string) {
     const self = this;
-    self.authSvc.setUserId(data.userId);
-    self.authSvc.setAccessToken(data.id);
-    self.accountSvc.getCurrentUser().pipe(
-      takeUntil(this.onDestroy$)
-    ).subscribe((account: Account) => {
+    self.authSvc.setAccessTokenId(tokenId);
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe((account: Account) => {
       if (account) {
         self.account = account;
 

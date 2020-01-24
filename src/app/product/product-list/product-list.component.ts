@@ -72,7 +72,7 @@ export class ProductListComponent implements OnInit {
   }
 
   change(p: Product) {
-    this.router.navigate(['admin/products/' + p.id]);
+    this.router.navigate(['admin/products/' + p._id]);
   }
 
   add() {

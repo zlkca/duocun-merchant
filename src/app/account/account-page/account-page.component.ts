@@ -7,14 +7,8 @@ import { Router } from '@angular/router';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
 import { PageActions } from '../../main/main.actions';
-import { RestaurantService } from '../../restaurant/restaurant.service';
-import { IRestaurant } from '../../restaurant/restaurant.model';
 import { MatSnackBar } from '../../../../node_modules/@angular/material';
 import { FormBuilder, Validators } from '../../../../node_modules/@angular/forms';
-import { TransactionService } from '../../transaction/transaction.service';
-import { OrderService } from '../../order/order.service';
-import { IOrder } from '../../order/order.model';
-import { ITransaction } from '../../transaction/transaction.model';
 
 @Component({
   selector: 'app-account-page',
@@ -45,9 +39,6 @@ export class AccountPageComponent implements OnInit, OnDestroy {
     private rx: NgRedux<IAppState>,
     private fb: FormBuilder,
     private router: Router,
-    private orderSvc: OrderService,
-    private restaurantSvc: RestaurantService,
-    private transactionSvc: TransactionService,
     private snackBar: MatSnackBar
   ) {
     const self = this;
@@ -63,7 +54,7 @@ export class AccountPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
-    this.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
+    this.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
       self.account = account;
 
       if (account) {

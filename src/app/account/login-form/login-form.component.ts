@@ -63,22 +63,13 @@ export class LoginFormComponent implements OnInit, OnDestroy {
     const v = this.form.value;
     this.authSvc.removeCookies();
     if (this.form.valid) {
-      this.accountSvc.login(v.account, v.password).subscribe((data: any) => {
-        if (data) {
-          self.authSvc.setUserId(data.userId);
-          self.authSvc.setAccessToken(data.id);
-          self.accountSvc.getCurrentUser().subscribe((account: Account) => {
+      this.accountSvc.login(v.account, v.password).subscribe((tokenId: string) => {
+        if (tokenId) {
+          self.authSvc.setAccessTokenId(tokenId);
+          self.accountSvc.getCurrentAccount().subscribe((account: Account) => {
             if (account) {
               self.rx.dispatch({ type: AccountActions.UPDATE, payload: account }); // update header, footer icons
-              if (account.type === 'super') {
-                this.router.navigate(['admin']);
-              } else if (account.type === 'worker') {
-                this.router.navigate(['order/list-worker']);
-              } else if (account.type === 'restaurant') {
-                this.router.navigate(['order/list-restaurant']);
-              } else if (account.type === 'user') {
-                this.router.navigate(['main/home']);
-              }
+              self.router.navigate(['order/summary']);
             } else {
               this.errMsg = 'Wrong username or password';
               // this.router.navigate(['account/login']);

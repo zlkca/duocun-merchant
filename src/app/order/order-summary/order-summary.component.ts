@@ -2,13 +2,12 @@ import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
 import { AccountService } from '../../account/account.service';
 import { OrderService } from '../../order/order.service';
 import { SharedService } from '../../shared/shared.service';
-import { IOrderItem, IOrder } from '../order.model';
+import { IOrderItem, IOrder, OrderStatus } from '../order.model';
 // import { SocketService } from '../../shared/socket.service';
-import { IRestaurant, IPhase } from '../../restaurant/restaurant.model';
+import { IMerchant, IPhase } from '../../restaurant/restaurant.model';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
 import * as moment from 'moment';
-import { ProductService } from '../../product/product.service';
 
 import { environment } from '../../../environments/environment';
 
@@ -18,16 +17,16 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./order-summary.component.scss']
 })
 export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() restaurant: IRestaurant;
+  @Input() restaurant: IMerchant;
 
   orders: IOrder[] = [];
   list: IOrderItem[];
   ordersWithNote: IOrder[] = [];
   onDestroy$ = new Subject();
+  loading = false;
 
   constructor(
     private orderSvc: OrderService,
-    private productSvc: ProductService,
     private sharedSvc: SharedService,
   ) {
 
@@ -40,7 +39,10 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     const self = this;
     if (this.restaurant) {
-      self.reload(this.restaurant);
+      if (!this.loading) {
+        this.loading = true;
+        self.reload(this.restaurant);
+      }
     } else {
       self.orders = [];
     }
@@ -65,63 +67,40 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     // });
   }
 
-  reload(merchant: IRestaurant) {
+  reload(merchant: IMerchant) {
     const self = this;
-    const query = {
+    const standard = moment().set({ hour: 19, minute: 0, second: 0, millisecond: 0 });
+    const dt = moment().isAfter(standard) ? moment().add(1, 'day') : moment();
+    const dt1 = dt.set({ hour: 11, minute: 20, second: 0, millisecond: 0 }).toISOString();
+    const dt2 = dt.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toISOString();
+    const qOrder = {
       merchantId: merchant._id,
-      delivered: { $lt: moment().endOf('day').toISOString(), $gt: moment().startOf('day').toISOString() },
-      status: { $nin: ['del', 'tmp'] }
+      delivered: { $in: [dt1, dt2] },
+      status: { $nin: [OrderStatus.DELETED, OrderStatus.TEMP] }
     };
 
-    this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
+    this.orderSvc.find(qOrder).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       merchant.phases.map((phase: IPhase) => {
         phase.orders = [];
       });
 
-      // const list = [];
-      // const ordersWithNote = [];
-
       orders.map((order: IOrder) => {
-        // const noteItems = [];
         if (environment.language === 'en') {
           order.items.map(item => {
             item.productName = item.product.nameEN;
             item.product.name = item.product.nameEN;
           });
         }
-        // order.items.map(item => {
-        //   const it = list.find(x => x.product._id === item.product._id);
-        //   const product = item.product;
-
-        //   if (it) {
-        //     it.quantity = it.quantity + item.quantity;
-        //   } else {
-        //     if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-        //       list.push(item);
-        //     }
-        //   }
-        //   if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-        //     noteItems.push(item);
-        //   }
-        // });
-
-        // if (order.note) {
-        //   ordersWithNote.push({note: order.note, items: noteItems});
-        // }
       });
 
       merchant.phases.map((phase: IPhase) => {
         phase.orders = orders.filter(o => this.sharedSvc.isSameTime(o.delivered, phase.pickup));
-
         phase.items = this.getItemList(phase.orders);
         phase.ordersWithNote = this.getNoteList(phase.orders);
       });
 
-      // self.list = list;
-      // self.ordersWithNote = ordersWithNote;
-      // self.orders = orders;
-
       self.restaurant = merchant;
+      self.loading = false;
     });
   }
 
@@ -147,21 +126,18 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     return ordersWithNote;
   }
 
-  getItemList(orders) {
-    const list = [];
-    orders.map(order => {
-      order.items.map(item => {
-        const it = list.find(x => x.productId === item.product._id);
+  getItemList(orders: IOrder[]) {
+    const list: IOrderItem[] = [];
+    orders.map((order: IOrder) => {
+      order.items.map((item: IOrderItem) => {
+        const it = list.find(x => x.productId === item.productId);
         if (it) {
           it.quantity = it.quantity + item.quantity;
         } else {
           if (item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-            list.push(item);
+            list.push(Object.assign({}, item));
           }
         }
-        // if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-        //   noteItems.push(item);
-        // }
       });
     });
     return list;
@@ -172,6 +148,7 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(v) {
     if (v.restaurant && v.restaurant.currentValue) {
       const restaurant = v.restaurant.currentValue;
+      this.loading = true;
       this.reload(restaurant);
     }
   }

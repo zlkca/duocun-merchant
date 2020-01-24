@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges, OnDestroy } from '@angular/core';
-import { IRestaurant, IPhase } from '../../restaurant/restaurant.model';
-import { IOrder, IOrderItem } from '../order.model';
+import { IMerchant, IPhase } from '../../restaurant/restaurant.model';
+import { IOrder, IOrderItem, OrderStatus } from '../order.model';
 import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
 import { Subject } from '../../../../node_modules/rxjs';
@@ -14,7 +14,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./order-pack.component.scss']
 })
 export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() restaurant: IRestaurant;
+  @Input() restaurant: IMerchant;
 
   orders: IOrder[] = [];
   list: IOrderItem[];
@@ -56,15 +56,21 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
     // });
   }
 
-  reload(merchant: IRestaurant) {
+  reload(merchant: IMerchant) {
     const self = this;
-    const query = {
+
+    const standard = moment().set({ hour: 19, minute: 0, second: 0, millisecond: 0 });
+
+    const dt = moment().isAfter(standard) ? moment().add(1, 'day') : moment();
+    const dt1 = dt.set({ hour: 11, minute: 20, second: 0, millisecond: 0 }).toISOString();
+    const dt2 = dt.set({ hour: 12, minute: 0, second: 0, millisecond: 0 }).toISOString();
+    const qOrder = {
       merchantId: merchant._id,
-      delivered: { $lt: moment().endOf('day').toISOString(), $gt: moment().startOf('day').toISOString() },
-      status: { $nin: ['del', 'tmp'] }
+      delivered: { $in: [dt1, dt2] },
+      status: { $nin: [OrderStatus.DELETED, OrderStatus.TEMP] }
     };
 
-    self.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
+    self.orderSvc.find(qOrder).pipe(takeUntil(this.onDestroy$)).subscribe((orders: IOrder[]) => {
       merchant.phases.map((phase: IPhase) => {
         phase.orders = [];
       });

@@ -1,16 +1,14 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormArray, FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { NgRedux } from '@angular-redux/store';
 
 import { ProductService } from '../product.service';
 import { RestaurantService } from '../../restaurant/restaurant.service';
-import { Restaurant } from '../../restaurant/restaurant.model';
-import { Product, Category } from '../../product/product.model';
-import { Jsonp } from '@angular/http';
+import { Product } from '../../product/product.model';
 import { SharedService } from '../../shared/shared.service';
 import { environment } from '../../../environments/environment';
 import { Picture } from '../../picture.model';
+import { IMerchant, MerchantType } from '../../restaurant/restaurant.model';
 
 @Component({
   selector: 'app-product-form',
@@ -41,7 +39,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   constructor(
     private fb: FormBuilder,
-    private restaurantSvc: RestaurantService,
+    private merchantSvc: RestaurantService,
     private productSvc: ProductService,
     private sharedSvc: SharedService,
     private route: ActivatedRoute,
@@ -73,7 +71,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
     this.form.get('merchantId').setValue(this.product.merchantId);
     this.form.get('categoryId').setValue(this.product.categoryId);
 
-    this.restaurantSvc.find().subscribe(r => {
+    const query = { status: 'active', type: MerchantType.RESTAURANT };
+    this.merchantSvc.find(query).subscribe(r => {
       this.restaurantList = r;
     });
 
@@ -150,7 +149,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
     // this.form.get('categories')['controls'][0].setValue(group.categories[0].id);
   }
 
-  setPictures(restaurant: Restaurant) {
+  setPictures(restaurant: IMerchant) {
     if (restaurant.pictures && restaurant.pictures.length > 0) {
       const picture = restaurant.pictures[0]; // fix me
       this.urls = [
@@ -190,13 +189,14 @@ export class ProductFormComponent implements OnInit, OnChanges {
     const p: Product = new Product(newV);
     const merchantId = p.merchantId;
 
-    p.id = self.product ? self.product.id : null;
+    p._id = self.product ? self.product._id : null;
     p.pictures = this.product.pictures;
-    if (this.product && this.product.id) {
-      this.productSvc.replace(p).subscribe(r => {});
-    } else {
-      this.productSvc.save(p).subscribe(r => {});
-    }
+    // fix me
+    // if (this.product && this.product._id) {
+    //   this.productSvc.replace(p).subscribe(r => {});
+    // } else {
+    //   this.productSvc.save(p).subscribe(r => {});
+    // }
     self.afterSave.emit({ restaurant_id: merchantId });
   }
 }

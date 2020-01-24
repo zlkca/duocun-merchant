@@ -4,7 +4,7 @@ import { AccountService } from '../../account/account.service';
 import { SharedService } from '../../shared/shared.service';
 import { RestaurantService } from '../../restaurant/restaurant.service';
 import { ActivatedRoute, Router } from '../../../../node_modules/@angular/router';
-import { IRestaurant } from '../../restaurant/restaurant.model';
+import { IMerchant } from '../../restaurant/restaurant.model';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 
@@ -20,11 +20,11 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
   rangeWeek;
   rangeMonth;
   onDestroy$ = new Subject();
-  restaurant: IRestaurant;
+  restaurant: IMerchant;
   deliverTime;
 
   constructor(
-    private restaurantSvc: RestaurantService,
+    private merchantSvc: RestaurantService,
     private sharedSvc: SharedService,
     private accountSvc: AccountService,
     private router: Router,
@@ -35,11 +35,11 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
         const roles = account.roles;
         if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1 && account.merchants && account.merchants.length > 0) {
           const merchantId = account.merchants[0];
-          self.restaurantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IRestaurant[]) => {
+          self.merchantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IMerchant[]) => {
             if (rs && rs.length > 0) {
               self.restaurant = rs[0];
             } else {

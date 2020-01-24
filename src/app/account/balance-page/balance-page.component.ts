@@ -37,7 +37,7 @@ export class BalancePageComponent implements OnInit {
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
       const roles = account.roles;
       if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1
         && account.merchants && account.merchants.length > 0

@@ -4,6 +4,11 @@ import { Address } from '../entity.model';
 import { GeoPoint } from '../location/location.model';
 import { Order } from '../order/order.model';
 
+export enum MerchantType {
+  RESTAURANT = 1,
+  TELECOM
+}
+
 export interface IPhase {
   orderEnd: string; // date time string
   pickup: string;   // date time string
@@ -13,7 +18,7 @@ export interface IPhase {
   ordersWithNote?: any[]; // do not save to dababase
 }
 
-export interface IRestaurant {
+export interface IMerchant {
   _id?: string;
   id?: string;
   name?: string;
@@ -37,13 +42,11 @@ export interface IRestaurant {
   pictures?: Picture[];
   address?: Address;
   order?: number;
-  pickupTime?: string;
-
   phases?: IPhase[];
 }
 
 // For database
-export class Restaurant implements IRestaurant {
+export class Restaurant implements IMerchant {
   _id: string;
   id: string;
   name: string;
@@ -59,10 +62,9 @@ export class Restaurant implements IRestaurant {
   pictures: Picture[];
   address: Address;
   order?: number;
-  pickupTime?: string;
 
   phases?: IPhase[];
-  constructor(data?: IRestaurant) {
+  constructor(data?: IMerchant) {
     Object.assign(this, data);
   }
 }

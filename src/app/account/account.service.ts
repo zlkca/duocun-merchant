@@ -75,27 +75,18 @@ export class AccountService extends EntityService {
   }
 
   // ------------------------------------
-  // getCurrentUser
-  // return Account object or null
-  getCurrentUser(): Observable<any> {
-    const id: any = this.authSvc.getUserId();
-    // const url = id ? (this.url + '/' + id) : (this.url + '/__anonymous__');
-    if (id) {
-      return this.findById(id);
+  // getCurrentAccount
+  // return IAccount or null
+  getCurrentAccount(): Observable<any> {
+    const tokenId: string = this.authSvc.getAccessTokenId();
+    if (tokenId) {
+      return this.http.get(this.url + '/current?tokenId=' + tokenId);
     } else {
       return of(null);
     }
   }
 
-  getCurrent(forceGet: boolean = false): Observable<Account> {
-    const self = this;
-    const state: any = this.ngRedux.getState();
-    if (!state || !state.account || !state.account.id || forceGet) {
-      return this.getCurrentUser();
-    } else {
-      return this.ngRedux.select<Account>('account');
-    }
-  }
+
 
   // getWechatAccessToken(authCode: string) {
   //   const url = super.getBaseUrl() + 'wechatAccessToken?code=' + authCode;

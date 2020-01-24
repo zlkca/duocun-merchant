@@ -1,5 +1,5 @@
 import { Picture } from '../picture.model';
-import { Restaurant } from '../restaurant/restaurant.model';
+import { IMerchant } from '../restaurant/restaurant.model';
 
 export interface IProduct {
   _id?: string;
@@ -11,10 +11,9 @@ export interface IProduct {
   cost: number;
   merchantId: string;
   categoryId: string;
-  created?: Date;
-  modified?: Date;
-  owner?: Restaurant;
-  restaurant?: Restaurant;
+  created?: string;
+  modified?: string;
+  restaurant?: IMerchant;
   category?: Category;
   pictures?: Picture[];
 }
@@ -27,11 +26,11 @@ export class Product implements IProduct {
   cost: number;
   categoryId: string;
   merchantId: string;
-  created: Date;
-  modified: Date;
-  id: string;
-  owner: Restaurant;
-  restaurant: Restaurant;
+  created: string;
+  modified: string;
+  _id: string;
+  owner: IMerchant;
+  restaurant: IMerchant;
   category: Category;
   pictures: Picture[];
   constructor(data?: IProduct) {

@@ -25,7 +25,7 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.accountSvc.getCurrent().subscribe((account: Account) => {
+    // this.accountSvc.getCurrentAccount().subscribe((account: Account) => {
     //     if (account && account.id) {
     //       this.user = account;
     //       this.type = account.type;
@@ -117,7 +117,7 @@ export class HeaderComponent implements OnInit {
   //   this.closeNavMenu();
 
   //   // check from token
-  //   this.accountSvc.getCurrent().subscribe(
+  //   this.accountSvc.getCurrentAccount().subscribe(
   //     (r: Account) => {
   //       self.isLogin = r && r.id ? true : false;
   //       if (self.isLogin) {

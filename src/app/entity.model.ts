@@ -2,11 +2,6 @@ export interface IEntity {
   id ?: string;
 }
 
-export interface IMerchant {
-  _id?: string;
-  name?: string;
-}
-
 export interface IAddress {
   formattedAddress: string;
   unit?: number;

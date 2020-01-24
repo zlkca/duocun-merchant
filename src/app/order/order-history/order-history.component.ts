@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../account/account.service';
 import { OrderService } from '../../order/order.service';
 import { SharedService } from '../../shared/shared.service';
-import { Order } from '../order.model';
+import { Order, OrderStatus } from '../order.model';
 import { SocketService } from '../../shared/socket.service';
 
 @Component({
@@ -27,7 +27,7 @@ export class OrderHistoryComponent implements OnInit {
 
   ngOnInit() {
     const self = this;
-    this.accountSvc.getCurrent().subscribe(account => {
+    this.accountSvc.getCurrentAccount().subscribe(account => {
       self.account = account;
       if (account && account.id) {
         self.reload(account.id);
@@ -60,8 +60,8 @@ export class OrderHistoryComponent implements OnInit {
 
   reload(clientId) {
     const self = this;
-    const q = { clientId: clientId, status: { $nin: ['del', 'tmp'] } };
-    self.orderSvc.find(q).subscribe(orders => {
+    const qOrder = { clientId: clientId, status: { $nin: [OrderStatus.DELETED, OrderStatus.TEMP] } };
+    self.orderSvc.find(qOrder).subscribe(orders => {
       orders.sort((a: Order, b: Order) => {
         if (this.sharedSvc.compareDateTime(a.created, b.created)) {
           return -1;

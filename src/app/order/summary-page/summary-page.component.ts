@@ -5,9 +5,11 @@ import { IAccount, Role } from '../../account/account.model';
 import { ActivatedRoute } from '../../../../node_modules/@angular/router';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
-import { Restaurant, IRestaurant } from '../../restaurant/restaurant.model';
+import { IMerchant } from '../../restaurant/restaurant.model';
 import { RestaurantService } from '../../restaurant/restaurant.service';
 import * as moment from 'moment';
+import { Action, ILog, AccountType } from '../../log/log.model';
+import { LogService } from '../../log/log.service';
 
 @Component({
   selector: 'app-summary-page',
@@ -17,27 +19,36 @@ import * as moment from 'moment';
 export class SummaryPageComponent implements OnInit, OnDestroy {
   account: IAccount;
   onDestroy$ = new Subject();
-  restaurant: IRestaurant;
+  restaurant: IMerchant;
 
   constructor(
-    private restaurantSvc: RestaurantService,
+    private merchantSvc: RestaurantService,
     private sharedSvc: SharedService,
     private accountSvc: AccountService,
+    private logSvc: LogService,
     private route: ActivatedRoute
   ) {
   }
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrentUser().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
       if (this.accountSvc.isMerchantAdmin(account) && account.merchants && account.merchants.length > 0) {
         const merchantId = account.merchants[0];
-        self.restaurantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IRestaurant[]) => {
-          if (rs && rs.length > 0) {
-            self.restaurant = rs[0];
-          } else {
-            self.restaurant = null;
-          }
+        const d: any = { // ILog
+          accountId: account._id,
+          merchantId: merchantId,
+          type: AccountType.MERCHANT,
+          action: Action.VIEW_ORDER
+        };
+        self.logSvc.save(d).pipe(takeUntil(this.onDestroy$)).subscribe(() => {
+          self.merchantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IMerchant[]) => {
+            if (rs && rs.length > 0) {
+              self.restaurant = rs[0];
+            } else {
+              self.restaurant = null;
+            }
+          });
         });
       } else {
 

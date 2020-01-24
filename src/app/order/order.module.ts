@@ -23,6 +23,7 @@ import { OrderPackComponent } from './order-pack/order-pack.component';
 import { SettlementPageComponent } from './settlement-page/settlement-page.component';
 import { SettlementComponent } from './settlement/settlement.component';
 import { ProductService } from '../product/product.service';
+import { LogService } from '../log/log.service';
 
 @NgModule({
   imports: [
@@ -44,7 +45,8 @@ import { ProductService } from '../product/product.service';
     OrderService,
     RestaurantService,
     AccountService,
-    ProductService
+    ProductService,
+    LogService
   ],
   declarations: [
     OrderHistoryComponent,

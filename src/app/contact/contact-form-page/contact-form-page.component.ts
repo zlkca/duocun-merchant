@@ -70,7 +70,7 @@ export class ContactFormPageComponent implements OnInit, OnDestroy {
     const s = Cookies.get('duocun-old-delivery-time');
     this.oldDeliveryTime = s ? JSON.parse(s) : null;
 
-    this.accountSvc.getCurrent().pipe(
+    this.accountSvc.getCurrentAccount().pipe(
       takeUntil(this.onDestroy$)
     ).subscribe(account => {
       self.account = account;

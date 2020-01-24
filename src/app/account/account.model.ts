@@ -27,6 +27,7 @@ export interface IAccount {
   roles?: number[];
   merchants?: string[]; // merchant Ids
   balance?: number;
+  info?: string;      // client info input by drivers
 }
 
 export class Account implements IAccount {
@@ -47,7 +48,7 @@ export class Account implements IAccount {
   roles?: number[];
   merchants?: string[]; // merchant Ids
   balance?: number;
-
+  info?: string;      // client info input by drivers
   constructor(data?: IAccount) {
     Object.assign(this, data);
   }

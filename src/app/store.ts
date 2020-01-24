@@ -15,7 +15,7 @@ import { deliveryReducer } from './delivery/delivery.reducer';
 import { IContact } from './contact/contact.model';
 import { contactReducer } from './contact/contact.reducer';
 import { restaurantReducer } from './restaurant/restaurant.reducer';
-import { IRestaurant } from './restaurant/restaurant.model';
+import { IMerchant } from './restaurant/restaurant.model';
 import { Account } from './account/account.model';
 import { deliveryTimeReducer } from './delivery/delivery-time.reducer';
 
@@ -26,7 +26,7 @@ export interface IAppState {
     page: string;
     cmd: ICommand;
     deliveryTime: IDeliveryTime;
-    restaurant: IRestaurant;
+    restaurant: IMerchant;
     malls: IMall[];
     delivery: IDelivery;
     contact: IContact;

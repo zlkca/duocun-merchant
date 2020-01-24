@@ -1,7 +1,22 @@
 import { Product, IProduct } from '../product/product.model';
 // import { Picture } from '../picture.model';
-import { Address, IMerchant } from '../entity.model';
-import { Restaurant } from '../restaurant/restaurant.model';
+import { Address } from '../entity.model';
+import { IMerchant } from '../restaurant/restaurant.model';
+
+export enum OrderStatus {
+  BAD = 1,
+  DELETED = 2,
+  TEMP = 3,         // generate a temp order for electronic order
+  NEW = 4,
+  LOADED,               // The driver took the food from Merchant
+  DONE,                 // Finish delivery
+  MERCHANT_CHECKED      // VIEWED BY MERCHANT
+}
+
+export enum PaymentStatus {
+  UNPAID = 1,
+  PAID
+}
 
 export interface IOrder {
   id?: string;
@@ -10,9 +25,10 @@ export interface IOrder {
   clientName?: string;
   merchantId?: string;
   merchantName?: string;
-  merchant?: IMerchant;
-  stuffId?: string;
-  status?: string;
+
+  status?: OrderStatus;
+  paymentStatus?: PaymentStatus;
+
   note?: string;
   address?: string;
 
@@ -23,6 +39,8 @@ export interface IOrder {
   total?: number;
   price?: number;
   cost?: number;
+
+  merchant?: IMerchant;
 
   delivered?: string;
   created?: string;
@@ -35,11 +53,10 @@ export class Order implements IOrder {
   clientName: string;
   merchantId: string;
   merchantName: string;
-  stuffId: string;
-  status: string;
-  clientStatus: string;
-  workerStatus: string;
-  merchantStatus: string;
+
+  status?: OrderStatus;
+  paymentStatus?: PaymentStatus;
+
   note: string;
   address: string;
 
@@ -61,14 +78,14 @@ export class Order implements IOrder {
 }
 
 export interface IOrderItem {
-  id?: number;
-  productId: string;
-  productName: string;
-  merchantId: string;
+  productId: string;    // in db
+  price: number;        // in db
+  cost: number;         // in db
+  quantity: number;     // in db
+
+  productName?: string;
+  merchantId?: string;
   merchantName: string;
-  price: number;
-  cost: number;
-  quantity: number;
   product?: IProduct;
 }
 

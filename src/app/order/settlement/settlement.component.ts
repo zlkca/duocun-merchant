@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Restaurant } from '../../restaurant/restaurant.model';
-import { IOrder } from '../order.model';
+import { IMerchant } from '../../restaurant/restaurant.model';
+import { IOrder, OrderStatus } from '../order.model';
 import { OrderService } from '../order.service';
 import { SharedService } from '../../shared/shared.service';
 import { ProductService } from '../../product/product.service';
@@ -20,7 +20,7 @@ import { environment } from '../../../environments/environment';
 })
 export class SettlementComponent implements OnInit, OnDestroy {
   @Input() type;
-  @Input() restaurant: Restaurant;
+  @Input() restaurant: IMerchant;
 
   list: any[] = [];
   ordersWithNote: IOrder[] = [];
@@ -49,12 +49,8 @@ export class SettlementComponent implements OnInit, OnDestroy {
     });
 
     const self = this;
-    self.accountSvc.getCurrent().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
       self.account = account;
-      // self.assignmentSvc.find({where: {driverId: account.id}}).pipe(takeUntil(self.onDestroy$)).subscribe(xs => {
-      //   self.assignments = xs;
-      //   self.reload(xs);
-      // });
     });
   }
 
@@ -173,8 +169,8 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   reload(merchantId: string, dateRange) {
     const self = this;
-    const query = { merchantId: merchantId, delivered: dateRange, status: { $nin: ['del', 'tmp'] } };
-    this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
+    const qOrder = { merchantId: merchantId, delivered: dateRange, status: { $nin: [OrderStatus.DELETED, OrderStatus.TEMP] } };
+    this.orderSvc.find(qOrder).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       const productList = [];
       orders.map((order: IOrder) => {
         order.items.map(item => {
@@ -217,15 +213,5 @@ export class SettlementComponent implements OnInit, OnDestroy {
       driverId: this.account.id,
       driverName: this.account.username
     };
-    // this.pay.update({ id: order.id }, data).pipe(takeUntil(this.onDestroy$)).subscribe(x => {
-    //   if (x && x.ok) {
-    //     this.snackBar.open('', '已完成客户' + order.clientName + '的订单', { duration: 2300 });
-    //     // setTimeout(() => {
-    //     //   this.reload(self.assignments);
-    //     // }, 2000);
-    //   }
-    // });
-
-    // this.updateBalance();
   }
 }
