@@ -6,6 +6,19 @@
       <td mat-cell *matCellDef="let row"> {{row.created | date: 'MMMd E'}} </td>
     </ng-container>
 
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef i18n="@@Description"> Description </th>
+      <td mat-cell *matCellDef="let row">
+        <div>
+          <div [ngClass]="row.items ? 'red':''">{{row.description}}</div>
+          <div *ngFor="let it of row.items">
+            <span *ngIf="lang==='zh'">{{it.product.name.length > 9 ? ((it.product.name | slice:0:7) + '..') : it.product.name}} x {{it.quantity}}</span>
+            <span *ngIf="lang==='en'">{{it.product.nameEN.length > 9 ? ((it.product.nameEN | slice:0:7) + '..') : it.product.nameEN}} x {{it.quantity}}</span>
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="paid">
       <th mat-header-cell *matHeaderCellDef i18n="@@ReceivableIncrease"> Receivable + </th>
       <td mat-cell *matCellDef="let row"> {{row.paid | number : '1.2-2'}} </td>

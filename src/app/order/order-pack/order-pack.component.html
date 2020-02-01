@@ -17,7 +17,7 @@
         <div class="product-block">
           <div *ngFor="let item of order.items" class="text-sm row">
             <div class="col-6 product-col">{{item.product.name}}</div>
-            <div class="col-3 quantity-col">x{{item.quantity}}</div>
+            <div class="col-3 quantity-col" [ngClass]="item.quantity > 1 ? 'warning' : 'normal'">x{{item.quantity}}</div>
             <!-- <div class="col-3 price-col">${{item.price * item.quantity | number : '1.2-2'}}</div> -->
           </div>
         </div>
