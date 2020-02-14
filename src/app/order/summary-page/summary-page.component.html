@@ -6,7 +6,7 @@
     <div class="deliver-time">
       <span i18n="@@DeliverTime">Deliver Time</span>:
     </div>
-    <app-order-summary *ngIf="restaurant" [restaurant]="restaurant"></app-order-summary>
+    <app-order-summary [merchants]="merchants"></app-order-summary>
     <!-- <mat-tab-group mat-align-tabs="center">
       <mat-tab i18n-label label="LunchToday">
         <app-order-summary [account]="account" [dateRange]="rangeToday"></app-order-summary>

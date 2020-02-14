@@ -1,5 +1,5 @@
-<mat-tab-group mat-align-tabs="center" *ngIf="restaurant">
-  <mat-tab label="{{phase.pickup}}" *ngFor="let phase of restaurant.phases">
+<mat-tab-group mat-align-tabs="center" *ngIf="merchant">
+  <mat-tab label="{{phase.pickup}}" *ngFor="let phase of merchant.phases">
 
   <div *ngIf="phase.ordersWithNote && phase.ordersWithNote.length>0">
     <div class="row label-sm">
@@ -17,9 +17,8 @@
         </mat-expansion-panel-header>
     
         <div *ngFor="let item of order.items" class="text-sm row">
-          <div class="col-6 product-col">{{item.product.name}}</div>
+          <div class="col-9 product-col">{{item.product.name}} ({{getCategoryName(item)}})</div>
           <div class="col-3 quantity-col" [ngClass]="item.quantity > 1 ? 'warning' : 'normal'">x{{item.quantity}}</div>
-          <!-- <div class="col-3 price-col">${{item.price * item.quantity | number : '1.2-2'}}</div> -->
         </div>
       </mat-expansion-panel>
     </div>
@@ -29,7 +28,7 @@
     <span i18n="@@Products">Products</span>:
   </div>
   <div *ngFor="let item of phase.items" class="row">
-    <div class="col-8">{{item.product.name}}</div>
+    <div class="col-8">{{item.product.name}} ({{getCategoryName(item)}})</div>
     <div class="col-4" [ngClass]="item.quantity > 1 ? 'warning' : 'normal'">x{{item.quantity}}</div>
   </div>
 

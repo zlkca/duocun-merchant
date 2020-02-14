@@ -20,7 +20,7 @@ import { environment } from '../../../environments/environment';
 })
 export class SettlementComponent implements OnInit, OnDestroy {
   @Input() type;
-  @Input() restaurant: IMerchant;
+  @Input() merchants: IMerchant[];
 
   list: any[] = [];
   ordersWithNote: IOrder[] = [];
@@ -67,29 +67,24 @@ export class SettlementComponent implements OnInit, OnDestroy {
 
   onDateChange(type: string, event: MatDatepickerInputEvent<Date>) {
     const startDate = moment(event.value);
-    const merchantId = this.restaurant._id;
     this.date.setValue(startDate);
 
     if (this.type === 'day') {
       const dayStart = moment(event.value).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
       const dayEnd = moment(event.value).set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(merchantId, this.dateRange);
+      this.reload(this.merchants, this.dateRange);
     } else if (this.type === 'week') {
       const dayStart = moment(event.value).startOf('week').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
       const dayEnd = moment(event.value).endOf('week').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(merchantId, this.dateRange);
+      this.reload(this.merchants, this.dateRange);
     } else if (this.type === 'month') {
       const dayStart = moment(event.value).startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).toISOString();
       const dayEnd = moment(event.value).endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       this.dateRange = { $lt: dayEnd, $gt: dayStart };
-      this.reload(merchantId, this.dateRange);
+      this.reload(this.merchants, this.dateRange);
     }
-
-    // this.deliverTime = startDate.set({ hour: 11, minute: 45, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss');
-    // this.range = this.getDateRange(startDate);
-    // this.reload(merchantId, this.dateRange);
   }
 
   getDateRangeForNow(type) {
@@ -106,30 +101,21 @@ export class SettlementComponent implements OnInit, OnDestroy {
       const dayEnd = moment().endOf('month').set({ hour: 23, minute: 59, second: 59, millisecond: 0 }).toISOString();
       return { $lt: dayEnd, $gt: dayStart };
     }
-
-    // if (now.isAfter(dayEnd)) {
-    //   this.deliverTime = this.sharedSvc.getStartOf('day').add(1, 'days')
-    //     .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-    //     .format('YYYY-MM-DD HH:mm:ss');
-    // } else {
-    //   this.deliverTime = this.sharedSvc.getStartOf('day')
-    //     .set({ hour: 11, minute: 45, second: 0, millisecond: 0 })
-    //     .format('YYYY-MM-DD HH:mm:ss');
-    // }
   }
 
 
   ngOnInit() {
     const self = this;
-    const merchantId = this.restaurant._id;
+    const merchantIds = [];
+    this.merchants.map(m => merchantIds.push(m._id));
     const now = moment();
     this.date.setValue(now);
 
-    this.productSvc.find({ merchantId: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
+    this.productSvc.find({ merchantId: {$in: merchantIds} }).pipe(takeUntil(this.onDestroy$)).subscribe((products: IProduct[]) => {
       self.products = products;
       self.dateRange = self.getDateRangeForNow(self.type);
-      if (self.restaurant) {
-        self.reload(merchantId, self.dateRange);
+      if (self.merchants) {
+        self.reload(self.merchants, self.dateRange);
       } else {
         self.list = [];
       }
@@ -138,19 +124,6 @@ export class SettlementComponent implements OnInit, OnDestroy {
     // this.socketSvc.on('updateOrders', x => {
     //   // self.onFilterOrders(this.selectedRange);
     //   if (x.clientId === self.account.id) {
-    //     const index = self.orders.findIndex(i => i.id === x.id);
-    //     if (index !== -1) {
-    //       self.orders[index] = x;
-    //     } else {
-    //       self.orders.push(x);
-    //     }
-    //     self.orders.sort((a: Order, b: Order) => {
-    //       if (this.sharedSvc.compareDateTime(a.created, b.created)) {
-    //         return -1;
-    //       } else {
-    //         return 1;
-    //       }
-    //     });
     //   }
     // });
   }
@@ -167,9 +140,11 @@ export class SettlementComponent implements OnInit, OnDestroy {
     this.onDestroy$.complete();
   }
 
-  reload(merchantId: string, dateRange) {
+  reload(merchants: IMerchant[], dateRange) {
     const self = this;
-    const qOrder = { merchantId: merchantId, delivered: dateRange, status: { $nin: [OrderStatus.DELETED, OrderStatus.TEMP] } };
+    const merchantIds = [];
+    merchants.map(m => merchantIds.push(m._id));
+    const qOrder = { merchantId: {$in: merchantIds}, delivered: dateRange, status: { $nin: [OrderStatus.DELETED, OrderStatus.TEMP] } };
     this.orderSvc.find(qOrder).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       const productList = [];
       orders.map((order: IOrder) => {
@@ -204,14 +179,4 @@ export class SettlementComponent implements OnInit, OnDestroy {
     return s ? this.sharedSvc.toDateTimeString(s) : '';
   }
 
-
-
-  togglePaid(e) {
-    const self = this;
-    const data = {
-      status: e.checked ? 'paid' : 'unpaid',
-      driverId: this.account.id,
-      driverName: this.account.username
-    };
-  }
 }

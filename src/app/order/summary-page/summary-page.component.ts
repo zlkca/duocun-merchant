@@ -2,12 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AccountService } from '../../account/account.service';
 import { SharedService } from '../../shared/shared.service';
 import { IAccount, Role } from '../../account/account.model';
-import { ActivatedRoute } from '../../../../node_modules/@angular/router';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
 import { Subject } from '../../../../node_modules/rxjs';
 import { IMerchant } from '../../restaurant/restaurant.model';
 import { RestaurantService } from '../../restaurant/restaurant.service';
-import * as moment from 'moment';
 import { Action, ILog, AccountType } from '../../log/log.model';
 import { LogService } from '../../log/log.service';
 
@@ -19,58 +17,41 @@ import { LogService } from '../../log/log.service';
 export class SummaryPageComponent implements OnInit, OnDestroy {
   account: IAccount;
   onDestroy$ = new Subject();
-  restaurant: IMerchant;
+  merchants: IMerchant[];
 
   constructor(
     private merchantSvc: RestaurantService,
     private sharedSvc: SharedService,
     private accountSvc: AccountService,
-    private logSvc: LogService,
-    private route: ActivatedRoute
+    private logSvc: LogService
   ) {
   }
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
-      if (this.accountSvc.isMerchantAdmin(account) && account.merchants && account.merchants.length > 0) {
-        const merchantId = account.merchants[0];
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
+      if (this.accountSvc.isMerchantAdmin(account)) {
+        const merchantAccountId = account.merchantAccountId;
         const d: any = { // ILog
           accountId: account._id,
-          merchantId: merchantId,
+          // merchantId: merchantId,
+          merchantAccountId: account.merchantAccountId,
           type: AccountType.MERCHANT,
           action: Action.VIEW_ORDER
         };
         self.logSvc.save(d).pipe(takeUntil(this.onDestroy$)).subscribe(() => {
-          self.merchantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IMerchant[]) => {
-            if (rs && rs.length > 0) {
-              self.restaurant = rs[0];
-            } else {
-              self.restaurant = null;
-            }
+          self.merchantSvc.getByAccountId(merchantAccountId).pipe(takeUntil(this.onDestroy$)).subscribe((ms: IMerchant[]) => {
+            self.merchants = ms;
           });
         });
       } else {
-
+        self.merchants = [];
       }
     });
 
     // this.socketSvc.on('updateOrders', x => {
     //   // self.onFilterOrders(this.selectedRange);
     //   if (x.clientId === self.account.id) {
-    //     const index = self.orders.findIndex(i => i.id === x.id);
-    //     if (index !== -1) {
-    //       self.orders[index] = x;
-    //     } else {
-    //       self.orders.push(x);
-    //     }
-    //     self.orders.sort((a: Order, b: Order) => {
-    //       if (this.sharedSvc.compareDateTime(a.created, b.created)) {
-    //         return -1;
-    //       } else {
-    //         return 1;
-    //       }
-    //     });
     //   }
     // });
   }

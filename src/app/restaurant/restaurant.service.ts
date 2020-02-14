@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../account/auth.service';
 import { EntityService } from '../entity.service';
 import { IDeliveryTime } from '../delivery/delivery.model';
+import { Observable } from '../../../node_modules/rxjs';
 
 @Injectable()
 export class RestaurantService extends EntityService {
@@ -16,6 +17,11 @@ export class RestaurantService extends EntityService {
   ) {
     super(authSvc, http);
     this.url = super.getBaseUrl() + 'Restaurants';
+  }
+
+  getByAccountId(merchantAccountId: string): Observable<any> {
+    const url = this.url + '/getByAccountId';
+    return this.doGet(url, {id: merchantAccountId});
   }
 
   isClosed(restaurant: IMerchant, deliveryTime: IDeliveryTime) {

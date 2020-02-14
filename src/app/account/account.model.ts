@@ -25,9 +25,11 @@ export interface IAccount {
   accessTokens?: any[];
   address?: IAddress;
   roles?: number[];
-  merchants?: string[]; // merchant Ids
+  merchants?: string[]; // merchant Ids deprecated
   balance?: number;
-  info?: string;      // client info input by drivers
+
+  merchantAccountId?: string;  // finance account
+  info?: string;               // client info input by drivers
 }
 
 export class Account implements IAccount {
@@ -46,9 +48,11 @@ export class Account implements IAccount {
   accessTokens?: any[];
   address?: Address;
   roles?: number[];
-  merchants?: string[]; // merchant Ids
+  merchants?: string[]; // deprecated
   balance?: number;
-  info?: string;      // client info input by drivers
+
+  merchantAccountId?: string;  // finance account
+  info?: string;               // client info input by drivers
   constructor(data?: IAccount) {
     Object.assign(this, data);
   }

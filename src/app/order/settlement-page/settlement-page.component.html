@@ -3,15 +3,15 @@
     <span class="title-bg" i18n="@@Query">Order Query</span>
   </div>
   <div class="content">
-    <mat-tab-group mat-align-tabs="center" *ngIf="restaurant">
+    <mat-tab-group mat-align-tabs="center" *ngIf="merchants">
       <mat-tab i18n-label label="DailySettlement">
-        <app-settlement [restaurant]="restaurant" [type]="'day'"></app-settlement>
+        <app-settlement [merchants]="merchants" [type]="'day'"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="WeeklySettlement">
-        <app-settlement [restaurant]="restaurant" [type]="'week'"></app-settlement>
+        <app-settlement [merchants]="merchants" [type]="'week'"></app-settlement>
       </mat-tab>
       <mat-tab i18n-label label="MonthlySettlement">
-        <app-settlement [restaurant]="restaurant" [type]="'month'"></app-settlement>
+        <app-settlement [merchants]="merchants" [type]="'month'"></app-settlement>
       </mat-tab>
     </mat-tab-group>
   </div>

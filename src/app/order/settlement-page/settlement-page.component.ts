@@ -3,10 +3,11 @@ import { IAccount, Role } from '../../account/account.model';
 import { AccountService } from '../../account/account.service';
 import { SharedService } from '../../shared/shared.service';
 import { RestaurantService } from '../../restaurant/restaurant.service';
-import { ActivatedRoute, Router } from '../../../../node_modules/@angular/router';
+import { Router } from '../../../../node_modules/@angular/router';
 import { IMerchant } from '../../restaurant/restaurant.model';
 import { Subject } from '../../../../node_modules/rxjs';
 import { takeUntil } from '../../../../node_modules/rxjs/operators';
+import { AccountType } from '../../log/log.model';
 
 @Component({
   selector: 'app-settlement-page',
@@ -20,53 +21,34 @@ export class SettlementPageComponent implements OnInit, OnDestroy {
   rangeWeek;
   rangeMonth;
   onDestroy$ = new Subject();
-  restaurant: IMerchant;
+  merchants: IMerchant[];
   deliverTime;
 
   constructor(
     private merchantSvc: RestaurantService,
     private sharedSvc: SharedService,
     private accountSvc: AccountService,
-    private router: Router,
-    private route: ActivatedRoute
+    private router: Router
   ) {
 
   }
 
   ngOnInit() {
     const self = this;
-    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe(account => {
-        const roles = account.roles;
-        if (roles && roles.length > 0 && roles.indexOf(Role.MERCHANT_ADMIN) !== -1 && account.merchants && account.merchants.length > 0) {
-          const merchantId = account.merchants[0];
-          self.merchantSvc.find({ _id: merchantId }).pipe(takeUntil(this.onDestroy$)).subscribe((rs: IMerchant[]) => {
-            if (rs && rs.length > 0) {
-              self.restaurant = rs[0];
-            } else {
-              self.restaurant = null;
-            }
-          });
-        } else { // not authorized for opreration merchant
-          this.router.navigate(['account/setting'], { queryParams: { merchant: false } });
-        }
+    self.accountSvc.getCurrentAccount().pipe(takeUntil(this.onDestroy$)).subscribe((account: IAccount) => {
+      if (this.accountSvc.isMerchantAdmin(account)) {
+        const merchantAccountId = account.merchantAccountId;
+        self.merchantSvc.getByAccountId(merchantAccountId).pipe(takeUntil(this.onDestroy$)).subscribe((ms: IMerchant[]) => {
+          self.merchants = ms;
+        });
+      } else {
+        self.merchants = [];
+      }
     });
 
     // this.socketSvc.on('updateOrders', x => {
     //   // self.onFilterOrders(this.selectedRange);
     //   if (x.clientId === self.account.id) {
-    //     const index = self.orders.findIndex(i => i.id === x.id);
-    //     if (index !== -1) {
-    //       self.orders[index] = x;
-    //     } else {
-    //       self.orders.push(x);
-    //     }
-    //     self.orders.sort((a: Order, b: Order) => {
-    //       if (this.sharedSvc.compareDateTime(a.created, b.created)) {
-    //         return -1;
-    //       } else {
-    //         return 1;
-    //       }
-    //     });
     //   }
     // });
   }
