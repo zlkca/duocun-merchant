@@ -40,7 +40,7 @@ export class PackagePageComponent implements OnInit, OnDestroy {
           // merchantId: merchantId,
           merchantAccountId: account.merchantAccountId,
           type: AccountType.MERCHANT,
-          action: Action.PACK_ORDER
+          action: Action.VIEW_ORDER
         };
         self.logSvc.save(d).pipe(takeUntil(this.onDestroy$)).subscribe(() => {
           self.merchantSvc.getByAccountId(merchantAccountId).pipe(takeUntil(this.onDestroy$)).subscribe((ms: IMerchant[]) => {

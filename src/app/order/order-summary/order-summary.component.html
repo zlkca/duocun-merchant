@@ -27,9 +27,9 @@
   <div class="row label-sm" *ngIf="phase.items && phase.items.length > 0">
     <span i18n="@@Products">Products</span>:
   </div>
-  <div *ngFor="let item of phase.items" class="row">
-    <div class="col-8">{{item.product.name}} ({{getCategoryName(item)}})</div>
-    <div class="col-4" [ngClass]="item.quantity > 1 ? 'warning' : 'normal'">x{{item.quantity}}</div>
+  <div *ngFor="let item of phase.items" class="row item-row">
+    <div class="col-10 product-col">{{item.product.name}} ({{getCategoryName(item)}})</div>
+    <div class="col-2 quantity-col" [ngClass]="item.quantity > 1 ? 'warning' : 'normal'">x{{item.quantity}}</div>
   </div>
 
   </mat-tab>
