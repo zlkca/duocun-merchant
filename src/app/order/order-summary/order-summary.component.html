@@ -16,7 +16,7 @@
           </mat-panel-description> -->
         </mat-expansion-panel-header>
     
-        <div *ngFor="let item of order.items" class="text-sm row">
+        <div *ngFor="let item of sortByProduct(order.items)" class="text-sm row">
           <div class="col-6 product-col">
             <div class="row">
               <div class="col-12">{{item.product.name}} <small>{{getSingleDesc(item)}}</small></div>
@@ -35,23 +35,31 @@
   <div class="row label-sm" *ngIf="phase.items && phase.items.length > 0">
     <span i18n="@@Products">Products</span>:
   </div>
-  <div *ngFor="let item of phase.items" class="row">
-    <div class="col-8">
-      {{item.product.name}} <small>{{getSingleDesc(item)}}</small>
+<!--  <div *ngFor="let item of phase.items" class="row">-->
+<!--    <div class="col-8">-->
+<!--      {{item.product.name}} <small>{{getSingleDesc(item)}}</small>-->
+<!--    </div>-->
+<!--    <div class="col-4">&times; {{item.quantity}}</div>-->
+<!--  </div>-->
+    <div *ngFor="let item of sortByProduct(groupBySingleSpec(phase.items))" class="row">
+      <div class="col-8">{{item.productName}}<small> {{item.singleDesc}}</small></div>
+      <div class="col-4">&times; {{item.quantity}}</div>
     </div>
-    <div class="col-4">&times; {{item.quantity}}</div>
-  </div>
 
   <div class="row label-sm" *ngIf="phase.items && phase.items.length > 0">
     <span i18n="@@SideDish">Side Dish</span>:
   </div>
-  <div *ngFor="let item of phase.items" class="row">
-    <ng-container *ngFor="let desc of getMultipleDesc(item)">
-      <div class="col-8">
-        {{desc.name}}
-      </div>
-      <div class="col-4">&times; {{desc.quantity * item.quantity}}</div>
-    </ng-container>
-  </div>
+    <div *ngFor="let item of groupByMultipleDesc(phase.items)" class="row">
+      <div class="col-8">{{item.name}}</div>
+      <div class="col-4">&times; {{item.quantity}}</div>
+    </div>
+<!--  <div *ngFor="let item of phase.items" class="row">-->
+<!--    <ng-container *ngFor="let desc of getMultipleDesc(item)">-->
+<!--      <div class="col-8">-->
+<!--        {{desc.name}}-->
+<!--      </div>-->
+<!--      <div class="col-4">&times; {{desc.quantity * item.quantity}}</div>-->
+<!--    </ng-container>-->
+<!--  </div>-->
   </mat-tab>
 </mat-tab-group>

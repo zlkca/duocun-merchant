@@ -65,3 +65,4 @@ typings/
 /.idea/duocun-merchant.iml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea
+/src/.idea

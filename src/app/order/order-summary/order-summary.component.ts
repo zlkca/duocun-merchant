@@ -212,4 +212,88 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
     return multipleDesc;
   }
 
+
+  isSameType(itOne, itTwo): boolean {
+    if (itOne.product._id !== itTwo.product._id) {
+      return false;
+    }
+    if (itOne.spec === itTwo.spec) {
+      return true;
+    }
+    if ((!itOne.spec || !itOne.spec.length) && (!itTwo.spec || !itTwo.spec.length)) {
+      return true;
+    }
+    const itOneSingleSpec = itOne.spec.filter(spec => spec.type === 'single');
+    const itTwoSingleSpec = itTwo.spec.filter(spec => spec.type === 'single');
+
+    if (!itOneSingleSpec.length !== !itTwoSingleSpec.length) {
+      return false;
+    }
+    for (let i = 0; i < itOneSingleSpec.length; i++) {
+      const twoSingleSpec = itTwoSingleSpec.find(spec => spec.specName === itOne.spec[i].specName);
+      if (!twoSingleSpec) {
+        return false;
+      }
+      if (itOne.spec[i].list[0].name !== twoSingleSpec.list[0].name) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  groupBySingleSpec(items): Array<{productName: string, singleDesc: string, quantity: number}> {
+    const list = [];
+    if (!items) {
+      return list;
+    }
+    items.forEach(item => {
+      const sameKind = list.find(pushed => this.isSameType(pushed, item));
+      if (sameKind) {
+        sameKind.quantity += item.quantity;
+      } else {
+        list.push({
+          ...item,
+          productName: item.product.name,
+          singleDesc: this.getSingleDesc(item),
+          quantity: item.quantity
+        });
+      }
+    });
+    return list;
+  }
+
+  groupByMultipleDesc(items): Array<{name: string, quantity: number}> {
+    if (!items || !items.length) {
+      return [];
+    }
+    const multipleDesc = [];
+    items.forEach(item => {
+      const itemMultipleDesc = this.getMultipleDesc(item);
+      itemMultipleDesc.forEach(desc => {
+        const pushed = multipleDesc.find(p => p.name === desc.name);
+        if (pushed) {
+          pushed.quantity += desc.quantity * item.quantity;
+        } else {
+          multipleDesc.push({
+            name: desc.name,
+            quantity: desc.quantity * item.quantity
+          });
+        }
+      });
+    });
+    return multipleDesc;
+  }
+
+  sortByProduct(items) {
+    return items.sort((i, j) => {
+      if (i.product.name > j.product.name) {
+        return 1;
+      } else if (i.product.name === j.product.name) {
+        return 0;
+      } else {
+        return -1;
+      }
+    });
+  }
+
 }
