@@ -59,3 +59,9 @@ typings/
 
 # next.js build output
 .next
+/.idea/.gitignore
+/.idea/codeStyles
+/package-lock.json
+/.idea/duocun-merchant.iml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea
