@@ -72,7 +72,6 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
       delivered: { $lt: moment().endOf('day').toISOString(), $gt: moment().startOf('day').toISOString() },
       status: { $nin: ['del', 'tmp'] }
     };
-
     this.orderSvc.find(query).pipe(takeUntil(this.onDestroy$)).subscribe(orders => {
       merchant.phases.map((phase: IPhase) => {
         phase.orders = [];
@@ -122,6 +121,7 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
       // self.orders = orders;
 
       self.restaurant = merchant;
+      console.log(self.restaurant);
     });
   }
 
@@ -148,21 +148,22 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getItemList(orders) {
-    const list = [];
+    let list = [];
     orders.map(order => {
-      order.items.map(item => {
-        const it = list.find(x => x.productId === item.product._id);
-        if (it) {
-          it.quantity = it.quantity + item.quantity;
-        } else {
-          if (item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
-            list.push(item);
-          }
-        }
+      // order.items.map(item => {
+      //   const it = list.find(x => x.productId === item.product._id);
+      //   if (it) {
+      //     it.quantity = it.quantity + item.quantity;
+      //   } else {
+      //     if (item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
+      //       list.push(item);
+      //     }
+      //   }
         // if (product && product.categoryId !== '5cbc5df61f85de03fd9e1f12') { // not drink
         //   noteItems.push(item);
         // }
-      });
+      // });
+      list = [...list, ...order.items.filter(item => item.product && item.product.categoryId !== '5cbc5df61f85de03fd9e1f12')];
     });
     return list;
   }
@@ -183,4 +184,32 @@ export class OrderSummaryComponent implements OnInit, OnChanges, OnDestroy {
   toDateTimeString(s) {
     return s ? this.sharedSvc.toDateTimeString(s) : '';
   }
+
+  getSingleDesc(item): string {
+    if (!item.spec || !item.spec.length) {
+      return '';
+    }
+    const singleSpecNames = [];
+    item.spec.filter(spec => spec.type === 'single' && spec.list && spec.list.length).forEach(spec => {
+      singleSpecNames.push(spec.list[0].name);
+    });
+    return singleSpecNames.join(', ');
+  }
+
+  getMultipleDesc(item): Array<{name: string, quantity: number}> {
+    if (!item.spec || !item.spec.length) {
+        return [];
+    }
+    const multipleDesc = [];
+    item.spec.filter(spec => spec.type === 'multiple' && spec.list && spec.list.length).forEach(spec => {
+      spec.list.forEach(specDetail => {
+        multipleDesc.push({
+          name: specDetail.name,
+          quantity: specDetail.quantity
+        });
+      });
+    });
+    return multipleDesc;
+  }
+
 }

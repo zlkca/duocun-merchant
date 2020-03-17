@@ -87,7 +87,7 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
       merchant.phases.map(phase => {
         phase.orders = orders.filter(o => this.sharedSvc.isSameTime(o.delivered, phase.pickup));
       });
-
+      console.log(merchant);
     });
   }
 
@@ -109,5 +109,32 @@ export class OrderPackComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy() {
     this.onDestroy$.next();
     this.onDestroy$.complete();
+  }
+
+  getSingleDesc(item): string {
+    if (!item.spec || !item.spec.length) {
+      return '';
+    }
+    const singleSpecNames = [];
+    item.spec.filter(spec => spec.type === 'single' && spec.list && spec.list.length).forEach(spec => {
+      singleSpecNames.push(spec.list[0].name);
+    });
+    return singleSpecNames.join(', ');
+  }
+
+  getMultipleDesc(item): Array<{name: string, quantity: number}> {
+    if (!item.spec || !item.spec.length) {
+      return [];
+    }
+    const multipleDesc = [];
+    item.spec.filter(spec => spec.type === 'multiple' && spec.list && spec.list.length).forEach(spec => {
+      spec.list.forEach(specDetail => {
+        multipleDesc.push({
+          name: specDetail.name,
+          quantity: specDetail.quantity
+        });
+      });
+    });
+    return multipleDesc;
   }
 }
