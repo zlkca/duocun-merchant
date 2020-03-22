@@ -15,11 +15,32 @@
           <div class="col-10">{{order.note}}</div>
         </div>
         <div class="product-block">
-          <div *ngFor="let item of order.items" class="text-sm row">
-            <div class="col-6 product-col">{{item.product.name}}</div>
-            <div class="col-3 quantity-col">x{{item.quantity}}</div>
-            <!-- <div class="col-3 price-col">${{item.price * item.quantity | number : '1.2-2'}}</div> -->
+<!--          <div *ngFor="let item of order.items" class="text-sm row">-->
+<!--            <div class="col-6 product-col">{{item.product.name}} <small>{{getSingleDesc(item)}}</small></div>-->
+<!--            <div class="col-3 quantity-col">&times; {{item.quantity}}</div>-->
+<!--            &lt;!&ndash; <div class="col-3 price-col">${{item.price * item.quantity | number : '1.2-2'}}</div> &ndash;&gt;-->
+<!--          </div>-->
+          <div *ngFor="let item of sortByProductName(order.items)" class="text-sm row">
+            <div class="col-9 product-col">
+                {{item.product.name}}
+                {{getSingleDesc(item)}}
+                <ng-container *ngIf="getMultipleDesc(item).length" i18n="@@SideDish">Side Dish: </ng-container>
+                <ng-container *ngFor="let desc of getMultipleDesc(item)"> {{desc.name}} &times; {{desc.quantity}}</ng-container>
+            </div>
+              <div class="col-3 quantity-col">{{item.quantity}}</div>
           </div>
+        </div>
+        <div class="product-block">
+<!--          <div *ngFor="let item of order.items" class="text-sm row">-->
+<!--            <ng-container *ngFor="let desc of getMultipleDesc(item)">-->
+<!--              <div class="col-6 product-col">{{desc.name}}</div>-->
+<!--              <div class="col-3 quantity-col">&times; {{item.quantity * desc.quantity}}</div>-->
+<!--            </ng-container>-->
+<!--          </div>-->
+<!--            <div *ngFor="let item of groupByMultipleDesc(order.items)" class="text-sm row">-->
+<!--                <div class="col-6 product-col">{{item.name}}</div>-->
+<!--                <div class="col-3 quantity-col">&times; {{item.quantity}}</div>-->
+<!--            </div>-->
         </div>
       </div>
     </div>

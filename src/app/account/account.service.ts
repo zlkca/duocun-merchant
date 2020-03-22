@@ -78,10 +78,10 @@ export class AccountService extends EntityService {
   // getCurrentUser
   // return Account object or null
   getCurrentUser(): Observable<any> {
-    const id: any = this.authSvc.getUserId();
+    const id: any = this.authSvc.getAccessToken();
     // const url = id ? (this.url + '/' + id) : (this.url + '/__anonymous__');
     if (id) {
-      return this.findById(id);
+      return this.http.get(`${this.url}/current/?tokenId=${id}`);
     } else {
       return of(null);
     }

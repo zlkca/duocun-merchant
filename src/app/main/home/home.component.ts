@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private locationSvc: LocationService,
     private sharedSvc: SharedService,
     private authSvc: AuthService,
-    private socketSvc: SocketService,
+    // private socketSvc: SocketService,
     private router: Router,
     private route: ActivatedRoute,
     private rx: NgRedux<IAppState>,
